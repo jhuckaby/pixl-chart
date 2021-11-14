@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title>Chart Demo</title>
+	<link rel="stylesheet" href="demo.css">
+</head>
+<body>
+	
+	<div class="header">
+		<button onClick="document.body.classList.add('dark');">Dark Theme</button>
+		<button onClick="document.body.classList.remove('dark');">Light Theme</button>
+		<button onClick="chart.download()">Download Image...</button>
+		<h1>Dynamic Layer Demo</h1>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="container">
+		<canvas class="chart" id="c1"></canvas>
+	</div>
+	
+	<div style="width:60%; margin:30px auto;">
+		<div style="text-align:center"><button onClick="addLayer()">Add Layer</button></div>
+	</div>
+	
+	<script src="../chart.min.js"></script>
+	<script>
+		var startTime = (Date.now() / 1000) - 3600;
+		var chart = new Chart({
+			"canvas": '#c1',
+			"fill": false,
+			"title": "Layer Playground",
+			"dataType": "integer",
+			"dataSuffix": "",
+			"legendMaxLines": 3
+		});
+		addLayer();
+		
+		function addLayer() {
+			var rows = [];
+			
+			for (var idx = 0; idx < 10; idx++) {
+				rows.push({
+					x: startTime + (idx * 60),
+					y: (chart.layers.length * 50) + (idx * 10) + (Math.random() * 10 * chart.layers.length)
+				});
+			}
+			
+			chart.addLayer({
+				title: 'Layer' + chart.layers.length,
+				data: rows
+			});
+			chart.update();
+		}
+	</script>
+</body>
+</html>

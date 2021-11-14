@@ -1,0 +1,83 @@
+/* pixl-chart source stylesheet */
+/* NOT FOR DISTRIBUTION: You do NOT need this file if you use chart.min.js */
+
+.pxc_tt_overlay {
+	position: absolute;
+	z-index: 2;
+}
+
+.pxc_tooltip, .pxc_line, .pxc_tt_point {
+	position: absolute;
+	z-index: 1;
+}
+
+.pxc_smooth {
+	transition: all 0.1s ease-in-out;
+}
+
+.pxc_line {
+	width: 0px;
+	border-left: 1px dashed #ccc;
+}
+
+.pxc_tt_content {
+	display: inline-block;
+	background-color: rgba(255, 255, 255, 1.0);
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pxc_tt_timestamp {
+	padding: 5px 8px 4px 8px;
+	background-color: #efefef;
+	border-bottom: 1px solid #ddd;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+
+.pxc_tt_table {
+	margin: 5px 6px 5px 6px;
+}
+
+.pxc_tt_dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 5px;
+	margin-top: 0px;
+}
+
+.pxc_tt_title {
+	font-weight: bold;
+}
+
+.pxc_tt_value {
+	margin-left: 10px;
+	text-align: right;
+}
+
+.pxc_tt_point {
+	border-color: #fff;
+	border-style: solid;
+}
+
+/* dark theme */
+
+body.dark .pxc_line {
+	border-left: 1px dashed #444;
+}
+
+body.dark .pxc_tt_content {
+	background-color: rgba(0, 0, 0, 1.0);
+	border: 1px solid #333;
+	box-shadow: none;
+}
+
+body.dark .pxc_tt_timestamp {
+	background-color: #222;
+	border-bottom: 1px solid #333;
+}
+
+body.dark .pxc_tt_point {
+	border-color: #000;
+}

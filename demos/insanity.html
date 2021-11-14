@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title>Chart Demo</title>
+	<link rel="stylesheet" href="demo.css">
+</head>
+<body>
+	
+	<div class="header">
+		<button onClick="document.body.classList.add('dark');">Dark Theme</button>
+		<button onClick="document.body.classList.remove('dark');">Light Theme</button>
+		<button onClick="chart.download()">Download Image...</button>
+		<h1>Chart Demo</h1>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="container">
+		<canvas class="chart" id="c1"></canvas>
+	</div>
+	
+	<script src="../chart.min.js"></script>
+	<script>
+		var chart = app.chart = new Chart({
+			canvas: '#c1',
+			title: 'Complete Insanity (100K Samples)',
+			dataType: 'bytes',
+			dataSuffix: '/sec',
+			fill: false,
+			lineWidth: 1,
+			progressive: false
+		});
+		
+		var now = (Date.now() / 1000) - 1000;
+		
+		for (var layer_idx = 0; layer_idx < 100; layer_idx++) {
+			var rows = [];
+			for (var idx = 0; idx < 1000; idx++) {
+				rows.push({
+					x: now + idx,
+					y: Math.floor( Math.random() * idx * layer_idx )
+				});
+			}
+			chart.addLayer({
+				title: 'Layer' + layer_idx,
+				data: rows
+			});
+		}
+		
+		chart.render();
+	</script>
+</body>
+</html>

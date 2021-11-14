@@ -1,0 +1,29 @@
+{
+  "name": "pixl-chart",
+  "version": "1.0.0",
+  "description": "A simple time series chart renderer using HTML5 Canvas.",
+  "author": "Joseph Huckaby <jhuckaby@gmail.com>",
+  "homepage": "https://github.com/jhuckaby/pixl-chart",
+  "license": "MIT",
+  "main": "chart.min.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jhuckaby/pixl-chart"
+  },
+  "bugs": {
+    "url": "https://github.com/jhuckaby/pixl-chart/issues"
+  },
+  "keywords": [
+    "chart",
+    "timeseries",
+    "canvas",
+	"html5"
+  ],
+  "devDependencies": {
+    "uglify-js": "^3.14.2",
+	"uglifycss": "^0.0.29"
+  },
+  "scripts": {
+	  "build": "node build.js"
+  }
+}
