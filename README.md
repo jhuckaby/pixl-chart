@@ -827,7 +827,7 @@ The `click` event is emitted when the user presses and then releases a mouse but
 
 ## Adding Layers
 
-Whether you specify your [layers](#layers) as part of the constructor options, or you call [addLayer](#addlayer) or [addLayers](#addlayers), the layer format is always the same.  At a bare minimum, each layer should have a `title` and a `data` array.  Here is an example:
+Whether you specify your [layers](#layers) as part of the constructor options, or you call [addLayer()](#addlayer) or [addLayers()](#addlayers), the layer format is always the same.  At a bare minimum, each layer should have a `title` and a `data` array.  Here is an example:
 
 ```js
 chart.addLayer({
