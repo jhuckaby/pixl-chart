@@ -313,7 +313,7 @@ Setting `dataType` to `float` means that your graph should display floating poin
 
 #### bytes
 
-Setting `dataType` to `float` means that your graph should display byte values.  These values are reduced for brevity, using a 1024-byte kilobyte, according to this table:
+Setting `dataType` to `bytes` means that your graph should display byte values.  These values are reduced for brevity, using a 1024-byte kilobyte, according to this table:
 
 | Range | Display Examples |
 |-------|------------------|
@@ -1030,7 +1030,6 @@ This would produce a snapshot using all the default options (PNG, 100% quality) 
 ```js
 chart.download({
 	filename: 'my-high-res-chart.png',
-	type: 'url', 
 	format: 'png', 
 	quality: 1.0, 
 	width: 1024, 
@@ -1118,12 +1117,12 @@ chart.on('mouseout', function(event) {
 });
 ```
 
-Additionally, when the mouse hovers over a chart, a special overlay `<div>` is automatically created and floated on top of everything, to track the mouse position and prevent interference with the hover tooltip and its elements.  The `<div>` will always have an ID of `pxc_tt_overlay` (short for "pixl-chart tooltip overlay").  The element is always empty, but is sized and positioned precisely atop the chart.  You can use this to render your own hover HTML elements which appear and disappear based on the mouse hover state.  Example:
+Additionally, when the mouse hovers over a chart, a special overlay `<div>` is automatically created and floated on top of everything, to track the mouse position and prevent interference with the hover tooltip and its elements.  The `<div>` will always have a class name of `pxc_tt_overlay` (short for "pixl-chart tooltip overlay").  The element is always empty, but is sized and positioned precisely atop the chart.  You can use this to render your own hover HTML elements which appear and disappear based on the mouse hover state.  Example:
 
 ```js
 chart.on('mouseover', function(event) {
 	// show our own hover components
-	document.querySelector('#pxc_tt_overlay').innerHTML = '<div class="my_custom_component">Button 1, Button 2, etc.</div>';
+	document.querySelector('.pxc_tt_overlay').innerHTML = '<div class="my_custom_component">Button 1, Button 2, etc.</div>';
 });
 chart.on('mouseout', function(event) {
 	// mouse has left the chart
@@ -1131,7 +1130,7 @@ chart.on('mouseout', function(event) {
 });
 ```
 
-Note that you don't have to do anything on `mouseout`, because the `#pxc_tt_overlay` element is automatically destroyed.
+Note that you don't have to do anything on `mouseout`, because the `.pxc_tt_overlay` element is automatically destroyed.
 
 One possible use here is to render your own "toolbar" with clickable buttons (e.g. snapshot, download, etc.), which appear when the mouse hovers over your chart, and disappear when the mouse leaves.
 

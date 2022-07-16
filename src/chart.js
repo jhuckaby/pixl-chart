@@ -121,6 +121,8 @@ class Chart {
 		delete args.observer;
 		delete args.events;
 		delete args.tooltip;
+		delete args.manager;
+		delete args.idx;
 		
 		if (!('colors' in overrides)) args.colors = JSON.parse( JSON.stringify(args.colors) );
 		if (!('dateStyles' in overrides)) args.dateStyles = JSON.parse( JSON.stringify(args.dateStyles) );
@@ -1054,8 +1056,11 @@ class Chart {
 		html += '">';
 		
 		// date/time stamp
+		var topts = Object.assign({}, this.dateStyles.tooltip);
+		if (this.dateRange == 'minute') topts.second = '2-digit';
+		
 		html += '<div class="pxc_tt_timestamp">';
-		html += this.formatDate( epoch, 'tooltip' );
+		html += this.formatDate( epoch, topts );
 		html += '</div>';
 		html += '<table class="pxc_tt_table">';
 		

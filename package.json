@@ -1,6 +1,6 @@
 {
   "name": "pixl-chart",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple time series chart renderer using HTML5 Canvas.",
   "author": "Joseph Huckaby <jhuckaby@gmail.com>",
   "homepage": "https://github.com/jhuckaby/pixl-chart",
