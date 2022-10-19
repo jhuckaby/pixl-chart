@@ -714,15 +714,15 @@ class Chart {
 		
 		if (!this.dataLabels || !this.dataLabels.length) return;
 		
-		ctx.save();
-		ctx.scale( this.density, this.density );
-		ctx.font = 'normal ' + this.fontSize + 'px ' + this.fontFamily;
-		ctx.textAlign = 'center';
-		ctx.textBaseline = 'middle';
-		
 		this.dataLabels.forEach( function(row) {
 			var label = row.label;
 			var pos = self.getDotPos(row);
+			
+			ctx.save();
+			ctx.scale( self.density, self.density );
+			ctx.font = 'normal ' + self.fontSize + 'px ' + self.fontFamily;
+			ctx.textAlign = 'center';
+			ctx.textBaseline = 'middle';
 			
 			ctx.lineWidth = label.lineWidth || 1;
 			ctx.setLineDash( label.dashStyle || [2, 2] );
@@ -750,9 +750,9 @@ class Chart {
 			ctx.translate( box.x + (box.width / 2), box.y + (box.height / 2) );
 			ctx.rotate(270 * Math.PI / 180);
 			ctx.fillText( label.text, 0, 0 );
+			
+			ctx.restore();
 		} ); // foreach label
-		
-		ctx.restore();
 	}
 	
 	renderDataGaps() {
