@@ -327,6 +327,14 @@ Furthermore, these values may include floating point decimals according to your 
 
 If you are displaying a graph that prefers non-binary divisions, e.g. 1K = 1000, then please set your [dataType](#datatype) to [integer](#integer).
 
+### delta
+
+| Type | Default |
+|------|---------|
+| Boolean | `false` |
+
+This controls the interpretation of the vertical graph layer data.  When this is set to `true`, each `y` (vertical) value will be rendered as an offset from the previous value, rather than an absolute.  This is useful for datasets which contain accumulating values over time, and you want to show the deltas between them.
+
 ### density
 
 | Type | Default |

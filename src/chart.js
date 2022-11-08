@@ -55,6 +55,7 @@ class Chart {
 		this.width = 0;
 		this.height = 0;
 		this.progressive = false;
+		this.delta = false;
 		
 		this.dirty = false;
 		this.hidden = false;
@@ -203,6 +204,13 @@ class Chart {
 					row.x += layer.offsetX || 0;
 					row.y += layer.offsetY || 0;
 				} );
+			}
+			
+			if (this.delta) {
+				for (var idx = layer.data.length - 1; idx >= 1; idx--) {
+					layer.data[idx].y -= layer.data[idx - 1].y;
+				}
+				layer.data[0].y = 0;
 			}
 		}
 		
