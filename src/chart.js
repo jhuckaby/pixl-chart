@@ -209,6 +209,7 @@ class Chart {
 			if (this.delta) {
 				for (var idx = layer.data.length - 1; idx >= 1; idx--) {
 					layer.data[idx].y -= layer.data[idx - 1].y;
+					if (this.divideByDelta) layer.data[idx].y /= (layer.data[idx].x - layer.data[idx - 1].x);
 				}
 				layer.data[0].y = 0;
 			}

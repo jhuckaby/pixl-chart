@@ -333,7 +333,15 @@ If you are displaying a graph that prefers non-binary divisions, e.g. 1K = 1000,
 |------|---------|
 | Boolean | `false` |
 
-This controls the interpretation of the vertical graph layer data.  When this is set to `true`, each `y` (vertical) value will be rendered as an offset from the previous value, rather than an absolute.  This is useful for datasets which contain accumulating values over time, and you want to show the deltas between them.
+This controls the interpretation of the vertical graph layer data.  When this is set to `true`, each `y` (vertical) value will be rendered as an offset from the previous value, rather than an absolute.  This is useful for datasets which contain counters (accumulating values over time), and you want to show the deltas between them.
+
+### divideByDelta
+
+| Type | Default |
+|------|---------|
+| Boolean | `false` |
+
+When [delta](#delta) mode is enabled, setting `divideByDelta` to `true` will divide every `y` (vertical) value by the delta between the current `x` (time) and previous `x` (time) entry in the dataset.  This is for graphs that need to display "per second" values (often with a [dataSuffix](#datasuffix) set to "/sec"), which will be accurate regardless of zoom level.
 
 ### density
 
