@@ -327,6 +327,10 @@ Furthermore, these values may include floating point decimals according to your 
 
 If you are displaying a graph that prefers non-binary divisions, e.g. 1K = 1000, then please set your [dataType](#datatype) to [integer](#integer).
 
+#### seconds
+
+Setting `dataType` to `seconds` means that your graph should display time-based data values (i.e. elapsed time) for the Y axis.  The labels will be quantized based on their range, e.g. seconds, minutes, hours and/or days, with varying degrees of accuracy for display purposes.
+
 ### delta
 
 | Type | Default |

@@ -1,5 +1,9 @@
 /* CSS Stylesheet for pixl-chart demos */
 
+* {
+	box-sizing: border-box;
+}
+
 body { 
 	background-color: #f4f4f4; 
 	font-family: Helvetica, sans-serif;

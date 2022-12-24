@@ -178,9 +178,17 @@ class Chart {
 		this.observer.observe( this.canvas );
 	}
 	
-	addLayer(layer) {
+	addLayer(layer_in) {
 		// add new layer
 		// layer: { title, data }
+		
+		// immediately make a copy so we don't touch the user's object
+		var layer = Object.assign({}, layer_in);
+		
+		// deep copy the data array
+		layer.data = JSON.parse( JSON.stringify(layer_in.data || []) );
+		
+		// assign idx and color
 		layer.idx = this.layers.length;
 		layer.color = layer.color || this.colors[ layer.idx % this.colors.length ];
 		
@@ -223,6 +231,7 @@ class Chart {
 		// add multiple layers at once
 		var self = this;
 		layers.forEach( function(layer) { self.addLayer(layer); } );
+		this.dirty = true;
 	}
 	
 	render() {
@@ -243,8 +252,8 @@ class Chart {
 		// do the actual canvas drawing
 		this.draw();
 		
-		// hide hover tooltip if visible
-		this.cancelHover();
+		// redraw hover tooltip if visible
+		this.redrawTooltip();
 		
 		// unset dirty flag
 		this.dirty = false;
@@ -376,6 +385,29 @@ class Chart {
 					if (limits.yMax > 107374182400 * 1.5) limits.yMax = Math.ceil( limits.yMax / 107374182400 ) * 107374182400; // 100GB
 					
 					if (limits.yMax > 1099511627776 * 1.5) limits.yMax = Math.ceil( limits.yMax / 1099511627776 ) * 1099511627776; // TB
+				}
+			break;
+			
+			case 'seconds':
+				limits.yMax = Math.ceil( limits.yMax );
+				if (limits.yMax < 60) {
+					if (limits.yMax < 10) {
+						if (limits.yMax >= 7) limits.yMax = 10;
+					}
+					else {
+						if (limits.yMax > 15) limits.yMax = Math.ceil( limits.yMax / 10 ) * 10;
+					}
+					if (limits.yMax > 60) limits.yMax = 60;
+				}
+				else if (limits.yMax < 3600) {
+					limits.yMax = Math.ceil( limits.yMax / 60 ) * 60;
+					if (limits.yMax > 900) limits.yMax = Math.ceil( limits.yMax / 600 ) * 600;
+				}
+				else if (limits.yMax < 86400) {
+					limits.yMax = Math.ceil( limits.yMax / 3600 ) * 3600;
+				}
+				else {
+					limits.yMax = Math.ceil( limits.yMax / 86400 ) * 86400;
 				}
 			break;
 			
@@ -973,6 +1005,9 @@ class Chart {
 		var self = this;
 		
 		this.canvas.addEventListener('mouseenter', function(event) {
+			// make sure no old overlays are left
+			document.querySelectorAll('.pxc_tt_overlay').forEach( function(item) { item.remove(); } );
+			
 			var rect = self.canvas.getBoundingClientRect();
 			var div = document.createElement('div');
 			div.className = 'pxc_tt_overlay';
@@ -983,7 +1018,11 @@ class Chart {
 			div.style.cursor = self.cursor;
 			document.body.appendChild(div);
 			
-			div.addEventListener('mousemove', self.handleHover.bind(self), false );
+			div.addEventListener('mousemove', function(event) {
+				self.handleHover(event);
+				self.emit('mousemove', event);
+			}, false );
+			
 			div.addEventListener('mouseleave', function(event) {
 				self.cancelHover();
 				div.remove();
@@ -998,6 +1037,14 @@ class Chart {
 		}, false);
 	}
 	
+	redrawTooltip() {
+		// force a redraw of tooltip, if already visible
+		if (!this.tooltip || !this.tooltip.lastHoverPt) return;
+		
+		this.tooltip.epoch = 0;
+		this.handleHover( this.tooltip.lastHoverPt );
+	}
+	
 	handleHover(event) {
 		// position and draw hover tooltip
 		var self = this;
@@ -1006,7 +1053,6 @@ class Chart {
 		var py = event.offsetY;
 		
 		if (!this.bounds) return; // sanity
-		this.emit('mousemove', event);
 		
 		if ((px < bounds.x - 1) || (px >= bounds.x + bounds.width + 1) || (py < bounds.y) || (py >= bounds.y + bounds.height)) {
 			// mouse is outside bounds, but still inside canvas -- treat this as outside
@@ -1172,6 +1218,8 @@ class Chart {
 				delete this.tooltip.points[idx];
 			}
 		}
+		
+		this.tooltip.lastHoverPt = { offsetX: px, offsetY: py };
 	}
 	
 	cancelHover() {
@@ -1211,6 +1259,10 @@ class Chart {
 				output = ChartUtils.getTextFromBytes( Math.floor(value), 10 ** (this.floatPrecision - 1) );
 			break;
 			
+			case 'seconds':
+				output = ChartUtils.getTextFromSeconds( value, true );
+			break;
+			
 			case 'integer': 
 				if (value >= 1000000000) output = '' + Math.floor(value / 1000000000) + 'B';
 				else if (value >= 1000000) output = '' + Math.floor(value / 1000000) + 'M';
@@ -1239,6 +1291,10 @@ class Chart {
 		switch (type) {
 			case 'bytes': 
 				output = ChartUtils.getTextFromBytes( Math.floor(value), 10 ** this.floatPrecision );
+			break;
+			
+			case 'seconds':
+				output = ChartUtils.getTextFromSeconds( value, false );
 			break;
 			
 			case 'integer': 
@@ -1454,6 +1510,41 @@ const ChartManager = {
 const ChartUtils = {
 	
 	numFmt: new Intl.NumberFormat(),
+	
+	getTextFromSeconds(sec, abbrev) {
+		// convert raw seconds to human-readable relative time
+		var neg = '';
+		if (sec < 0) { sec =- sec; neg = '-'; }
+		
+		var text = abbrev ? "sec" : "second";
+		var amt = sec;
+		
+		if (sec > 59) {
+			var min = sec / 60;
+			text = abbrev ? "min" : "minute"; 
+			amt = min;
+			
+			if (min > 59) {
+				var hour = min / 60;
+				text = abbrev ? "hr" : "hour"; 
+				amt = hour;
+				
+				if (hour > 23) {
+					var day = hour / 24;
+					text = "day"; 
+					amt = day;
+				} // hour>23
+			} // min>59
+		} // sec>59
+		
+		if (amt < 10) amt = Math.floor(amt * 10) / 10;
+		else amt = Math.floor(amt);
+		
+		var text = "" + amt + " " + text;
+		if ((amt != 1) && !abbrev) text += "s";
+		
+		return(neg + text);
+	},
 	
 	getTextFromBytes(bytes, precision) {
 		// convert raw bytes to english-readable format

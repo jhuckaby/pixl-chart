@@ -57,6 +57,7 @@
 }
 
 .pxc_tt_point {
+	box-sizing: content-box !important;
 	border-color: #fff;
 	border-style: solid;
 }
