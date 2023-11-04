@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title>Chart Demo</title>
+	<link rel="stylesheet" href="demo.css">
+</head>
+<body>
+	
+	<div class="header">
+		<button onClick="document.body.classList.add('dark');">Dark Theme</button>
+		<button onClick="document.body.classList.remove('dark');">Light Theme</button>
+		<button onClick="chart.download()">Download Image...</button>
+		<h1>Real-Time Demo</h1>
+		<div class="clear"></div>
+	</div>
+	
+	<div class="container">
+		<canvas class="chart" id="c1"></canvas>
+	</div>
+	
+	<script src="../chart.min.js"></script>
+	<script>
+		var chart = new Chart({
+			"canvas": '#c1',
+			"title": "DB Queries per sec",
+			"dataType": "integer",
+			"dataSuffix": "/sec",
+			"layers": [
+				{
+					"title": "db01.prod",
+					"data": []
+				}
+			]
+		});
+		chart.render();
+		
+		setInterval( function() {
+			chart.layers[0].data.push({
+				x: Math.floor( (new Date()).getTime() / 1000 ),
+				y: Math.floor( Math.random() * 100 )
+			});
+			chart.update();
+		}, 1000 );
+	</script>
+</body>
+</html>

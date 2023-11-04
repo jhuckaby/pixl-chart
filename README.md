@@ -144,6 +144,7 @@ pixl-chart does not come anywhere near the features offered by libraries such as
 - [Daily Range](https://pixlcore.com/software/pixl-chart/demos/daily-range.html)
 - [Monthly Range](https://pixlcore.com/software/pixl-chart/demos/monthly-range.html)
 - [Yearly Range](https://pixlcore.com/software/pixl-chart/demos/yearly-range.html)
+- [Real-Time Data](https://pixlcore.com/software/pixl-chart/demos/real-time.html)
 - [Dynamic Layers](https://pixlcore.com/software/pixl-chart/demos/dynamic-layers.html)
 - [Line Styles](https://pixlcore.com/software/pixl-chart/demos/line-styles.html)
 - [Linear Interpolation](https://pixlcore.com/software/pixl-chart/demos/linear-interpolation.html)
