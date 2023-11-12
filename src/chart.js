@@ -1438,6 +1438,9 @@ class Chart {
 			// remove from management
 			this.manager.remove(this);
 		}
+		
+		// make sure no old overlays are left
+		document.querySelectorAll('.pxc_tt_overlay').forEach( function(item) { item.remove(); } );
 	}
 	
 	// Simple EventEmitter mix-in:
@@ -1483,6 +1486,11 @@ const ChartManager = {
 	remove(chart) {
 		// remove chart from management
 		this.charts.splice(chart.idx, 1);
+		
+		// renumber remaining charts
+		this.charts.forEach( function(chart, idx) {
+			chart.idx = idx;
+		} );
 	},
 	
 	init() {
