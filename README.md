@@ -5,6 +5,20 @@
 	* [Features](#features)
 	* [Demos](#demos)
 - [Usage](#usage)
+	* [Adding Layers](#adding-layers)
+		+ [Layer Properties](#layer-properties)
+	* [Chart Management](#chart-management)
+		+ [Auto Resizing](#auto-resizing)
+	* [Line Smoothing](#line-smoothing)
+	* [Legend Display](#legend-display)
+	* [Dates and Times](#dates-and-times)
+	* [Dark Mode](#dark-mode)
+	* [Snapshots](#snapshots)
+		+ [Downloads](#downloads)
+	* [Headroom](#headroom)
+	* [Data Labels](#data-labels)
+	* [Zooming](#zooming)
+	* [Hover Overlay](#hover-overlay)
 	* [Configuration](#configuration)
 		+ [autoHeadroom](#autoheadroom)
 		+ [autoManage](#automanage)
@@ -21,6 +35,9 @@
 			- [integer](#integer)
 			- [float](#float)
 			- [bytes](#bytes)
+			- [seconds](#seconds)
+		+ [delta](#delta)
+		+ [divideByDelta](#dividebydelta)
 		+ [density](#density)
 		+ [fill](#fill)
 		+ [floatPrecision](#floatprecision)
@@ -80,20 +97,6 @@
 		+ [mousedown](#mousedown)
 		+ [mouseup](#mouseup)
 		+ [click](#click)
-	* [Adding Layers](#adding-layers)
-		+ [Layer Properties](#layer-properties)
-	* [Chart Management](#chart-management)
-		+ [Auto Resizing](#auto-resizing)
-	* [Line Smoothing](#line-smoothing)
-	* [Legend Display](#legend-display)
-	* [Dates and Times](#dates-and-times)
-	* [Dark Mode](#dark-mode)
-	* [Snapshots](#snapshots)
-		+ [Downloads](#downloads)
-	* [Headroom](#headroom)
-	* [Data Labels](#data-labels)
-	* [Zooming](#zooming)
-	* [Hover Overlay](#hover-overlay)
 - [Development](#development)
 - [License](#license)
 
@@ -171,7 +174,7 @@ Unless you are interested in the source code, the only file you need is `chart.m
 <canvas class="chart" id="c1" style="width:800px; height:400px;"></canvas>
 <script src="chart.min.js"></script>
 <script>
-	var chart = new Chart({
+	let chart = new Chart({
 		"canvas": '#c1',
 		"title": "App Requests per sec",
 		"dataType": "integer",
@@ -199,6 +202,315 @@ Unless you are interested in the source code, the only file you need is `chart.m
 ```
 
 The above example generates a very basic smooth area chart, with 10 data samples and all the default settings.  In this case the graph is fixed size, and does not automatically respond to resize events (see [Auto Resizing](#auto-resizing)).  See below for configuration options.
+
+## Adding Layers
+
+Whether you specify your [layers](#layers) as part of the constructor options, or you call [addLayer()](#addlayer) or [addLayers()](#addlayers), the layer format is always the same.  At a bare minimum, each layer should have a `title` and a `data` array.  Here is an example:
+
+```js
+chart.addLayer({
+	"title": "app01.prod",
+	"data": [
+		{ "x": 1634270340, "y": 40 },
+		{ "x": 1634270400, "y": 41 },
+		{ "x": 1634270460, "y": 111 },
+		{ "x": 1634270520, "y": 81 },
+		{ "x": 1634270580, "y": 35 },
+		{ "x": 1634270640, "y": 64 },
+		{ "x": 1634270700, "y": 60 },
+		{ "x": 1634270760, "y": 33 },
+		{ "x": 1634270820, "y": 28 },
+		{ "x": 1634270880, "y": 26 }
+	]
+});
+```
+
+In the above example the layer is named `app01.prod` and has 10 data points.  Each data point has an `x` and `y` property.  The `x` is the timestamp, and should be in [Epoch Seconds](https://en.wikipedia.org/wiki/Unix_time) or [Epoch Milliseconds](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now).  It can also be a full date/time string, as long as it can be parsed by [Date.parse()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse), but note that this incurs a performance penalty.  The `y` is the data value itself, and should be numerical.  It should also match your data type set by [dataType](#datatype).
+
+Note that the `x` values **must** always be pre-sorted (in ascending order).
+
+An alternate data format is also accepted, which is an array of X/Y values.  Example of this:
+
+```js
+chart.addLayer({
+	"title": "app01.prod",
+	"data": [
+		[ 1634270340, 40 ],
+		[ 1634270400, 41 ],
+		[ 1634270460, 111 ],
+		[ 1634270520, 81 ],
+		[ 1634270580, 35 ],
+		[ 1634270640, 64 ],
+		[ 1634270700, 60 ],
+		[ 1634270760, 33 ],
+		[ 1634270820, 28 ],
+		[ 1634270880, 26 ]
+	]
+});
+```
+
+However, note you must use the X/Y data format (e.g. `{"x":1634270880, "y":26}`) in order to use [Data Labels](#data-labels).
+
+### Layer Properties
+
+Here is the full list of available properties you can specify in each layer:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `title` | String | **(Required)** The title (display label) for the layer. |
+| `data` | Array | **(Required)** An array of data points for the layer. |
+| `color` | String | Optionally specify a color for the layer.  By default one is plucked from the global [colors](#colors) list. |
+| `opacity` | Number | Specify the layer opacity (alpha transparency), which defaults to `1.0`. |
+| `hidden` | Boolean | Set this to `true` to completely hide the layer from the graph (includes legend and tooltip). |
+| `smoothing` | Boolean | If global [smoothing](#smoothing) is disabled, you can re-enable it here, on a layer-by-layer basis. |
+| `fill` | Mixed | Optionally override the global [fill](#fill) on a layer-by-layer basis. |
+| `fillStyle` | Mixed | Optionally set a custom fill style with your own color or gradient.  See [fillStyle at MDN](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle). |
+| `stroke` | Boolean | Optionally override the global [stroke](#stroke) on a layer-by-layer basis. |
+| `lineWidth` | Number | Optionally override the global [lineWidth](#linewidth) on a layer-by-layer basis. |
+| `lineJoin` | String | Optionally override the global [lineJoin](#linejoin) on a layer-by-layer basis. |
+| `lineCap` | String | Optionally override the global [lineCap](#linecap) on a layer-by-layer basis. |
+| `lineDashes` | Array | Optionally override the global [lineDashes](#linedashes) on a layer-by-layer basis. |
+
+## Chart Management
+
+In addition to the global `Chart` class, pixl-chart also provides a global `ChartManager` singleton object, which manages all charts on the page.  This system is responsible for handling live resize, scroll-into-view, and smooth redraws that do not hang the browser, even with a large amount of charts on the same page.
+
+When your chart's [autoManage](#automanage) property is set to `true` (which is the default), your chart is automatically added to `ChartManager` and managed for you.
+
+Typically, you will not need to call the `ChartManager` object directly, unless you have multiple charts on the page and wish to update them all.  Instead of calling [render()](#render) or [update()](#update) on each of your charts, consider simply calling `ChartManager.check()` once:
+
+```js
+ChartManager.check();
+```
+
+The `check()` method in the `ChartManager` object will iterate over all the charts and figure out which ones were updated and require a redraw.  It will then automatically rerender them all, using sequential animation frames, as to not hang the browser.  It will also delay rerenders of any offscreen charts until they scroll back into view.  This is a **much** better way of redrawing a suite of charts than redrawing each one yourself.
+
+The `ChartManager` object also provides an API to access all of the charts on the page, so you don't have to keep track of them all yourself.  You can get to them by accessing the `charts` property, which is an array:
+
+```js
+let charts = ChartManager.charts;
+
+charts.forEach( function(chart) {
+	// do something with each chart
+} );
+```
+
+### Auto Resizing
+
+As part of the chart management system, pixl-chart also handles live resizes of your charts.  That is, it will automatically rerender your charts when the `<canvas>` DOM elements change size.  To support this system with your charts, you must first make sure the [autoManage](#automanage) and [autoResize](#autoresize) properties are enabled (this is the default).  Then, make sure that your `<canvas>` elements do not have a fixed size, but rather follow their parent element like this:
+
+```css
+canvas {
+	width: 100%;
+	height: 100%;
+}
+```
+
+Then, your chart will take up all available space in its parent element, and resize as needed to fit.
+
+## Line Smoothing
+
+By default, all your graph lines are smoothed using [monotone cubic interpolation](https://en.wikipedia.org/wiki/Monotone_cubic_interpolation).  This means, they are interpolated in a way that produces nice, smooth curves between each data point.  If you set the [smoothing](#smoothing) property to `false`, the lines will instead be rendered using linear interpolation (i.e. straight lines with no curves).
+
+This setting also affects the animation smoothness in the hover tooltip (i.e. how smoothly the hover tooltip and highlighted lines / dots follow the mouse cursor).  When [smoothing](#smoothing) is disabled, the smooth hover animation is also disabled, and the hover elements snap into place instantly.
+
+See the [Linear Interpolation](https://pixlcore.com/software/pixl-chart/demos/linear-interpolation.html) demo for an example of both types.  There are buttons below the chart which toggle smoothing on/off.
+
+## Legend Display
+
+By default, pixl-chart will display a "legend" directly below the chart data and X axis labels.  A legend is basically just a list of your layers, each with its title and a dot representing its color.  Here is an example legend:
+
+![Legend](https://pixlcore.com/software/pixl-chart/legend.png)
+
+To enable the legend, simply set the [legend](#legend) property to `true` (this is the default).  Everything else is automatic.
+
+If your chart has too many layers, and/or the layer titles are too long, the legend will automatically disappear.  This is to prevent it from eating up too much of your chart's vertical real estate.  This limit is controlled by the [legendMaxLines](#legendmaxlines) property.  By default, if the legend will eat up more than 2 lines, then it will automatically hide itself.
+
+## Dates and Times
+
+By default, pixl-chart will display dates and times based on your browser's locale and time zone settings.  The locale governs things like how to format months, days, hours, and so on, whereas the time zone controls how the raw [Epoch](https://en.wikipedia.org/wiki/Unix_time) seconds from your dataset are converted to human-readable dates/times (i.e. offset from GMT, +/- daylight savings time, etc.).
+
+Both of these properties are configurable.  If you want to override the default auto-detect behavior, you can set the [locale](#locale) property to any value from [this list of language codes](https://en.wikipedia.org/wiki/Language_localisation#Language_tags_and_codes), e.g. `en-US`.  You can also override the default auto-detected time zone, and set the [timeZone](#timezone) property to any value from [this list of time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), e.g. `America/Los_Angeles`.
+
+## Dark Mode
+
+Both light mode and dark mode are supported in pixl-chart.  This is done by rendering the chart with an alpha transparent background, and using neutral colors and grays, so they show up and look nice on both light and dark backgrounds.  This is true for the chart itself, as well as all PNG images generated from it (see [Snapshots](#snapshots) below).
+
+For supporting the hover tooltip with a dark theme, please add a `dark` class to the HTML `<body>` element when dark mode is active, and remove it if the theme is changed back to light.  This acts as a hint for pixl-chart to switch around its internal CSS for the hover elements, which are rendered as HTML.
+
+For example, if your page auto-detects and switches into dark mode based on user preference, you can use this code snippet at startup:
+
+```js
+if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+	document.body.classList.add('dark');
+}
+```
+
+You can also add an event listener to switch modes dynamically:
+
+```js
+window.matchMedia('(prefers-color-scheme: dark)').addListener('change', function(event) {
+	if (event.matches) document.body.classList.add('dark');
+	else document.body.classList.remove('dark');
+});
+```
+
+## Snapshots
+
+Since pixl-chart renders everything into an [HTML5 Canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) element, it is easy to take a "snapshot" of a chart and produce an image file.  You can actually do this yourself by accessing the underlying `<canvas>` element, but pixl-chart provides an API wrapper with some added niceties.  Here is an example:
+
+```js
+chart.snapshot({ type: 'blob', format: 'png', quality: 1.0 }, function(blob) {
+	// do something with blob
+});
+```
+
+In the above example we're asking for a [Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob), which is useful for uploading to a server using [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData).  You can alternatively ask for a [Data URL](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs) by setting the `type` to `url`.
+
+Here are the options you can specify to `snapshot()`:
+
+| Property | Default Value | Description |
+|----------|---------------|-------------|
+| `type` | `blob` | Specify the type of image output you want, either `blob` or `url`. |
+| `format` | `png` | Specify the desired image file format, e.g. `webp`, `png` or `jpeg`. |
+| `quality` | `1.0` | Specify the desired image quality from `0.0` (worst) to `1.0` (best). |
+
+You can also include any [chart configuration properties](#configuration) in the options object, to override them in the snapshot.  For example, you can specify a fixed pixel [width](#width), [height](#height) and [density](#density) for your snapshot image:
+
+```js
+let opts = {
+	type: 'url', 
+	format: 'webp', 
+	quality: 1.0, 
+	width: 1024, 
+	height: 512, 
+	density: 1
+};
+chart.snapshot(opts, function(url) {
+	// do something with data url
+});
+```
+
+One reason you might want to override these additional properties is to ensure that the image resolution is fixed, regardless of the chart's canvas size in the page, and the user's screen density (retina, etc.).
+
+Please note that when generating JPEG images, the default transparent background in the chart becomes black.  To work around this, provide a fixed opaque [background](#background) color in the options object that you pass to `snapshot()`.
+
+### Downloads
+
+As a convenience, pixl-chart provides an easy API to download a snapshot image.  This initiates the native browser file download behavior, and it will download the snapped image to the user's local machine.  You can optionally provide a filename to use, or omit it to have pixl-chart generate one for you based on the chart title and image format.  Example use:
+
+```js
+chart.download();
+```
+
+This would produce a snapshot using all the default options (PNG, 100% quality) and download it using a generated filename from the chart title.  Here is another example which specifies some options:
+
+```js
+chart.download({
+	filename: 'my-high-res-chart.png',
+	format: 'png', 
+	quality: 1.0, 
+	width: 1024, 
+	height: 512, 
+	density: 1
+});
+```
+
+The `download()` method accepts all the same options as [snapshot()](#snapshots), along with `filename`, and any [chart configuration properties](#configuration) like [width](#width), [height](#height) and [density](#density).
+
+## Headroom
+
+When [autoHeadroom](#autoheadroom) is set to `true` (which is the default), pixl-chart will attempt to add some vertical "headroom" above your chart's highest Y value.  The reason for this is to make the chart generally more pleasing to look at.  The library tries to do this by landing the topmost Y value on a round number, and scaling the visual data to fit.
+
+For example, if your chart's highest Y value is `395`, then the headroom system will round up the value to `400` for the top of the chart.  The same logic applies to all powers of 10, including floating point values below `1.0`, and byte values up to a TB (terabyte).  Note that it will never add more than 25% headroom.
+
+For a nice demo of this feature, check out the [Large Dataset](https://pixlcore.com/software/pixl-chart/demos/large-dataset.html) demo.  Here, the data's highest Y value is `5,497`, but since [autoHeadroom](#autoheadroom) is enabled (by default), the library rounds this up to `6,000`.  As a result, the topmost value and all the vertical labels are all nice round numbers.  This also naturally adds a small amount of "padding" above the data, so the highest peak doesn't run right into the top of the chart.
+
+If you don't like this behavior, simply set [autoHeadroom](#autoheadroom) to `false` in your chart, and your data's highest Y value will be honored, matching it up exactly with the top of the chart.
+
+## Data Labels
+
+If you need to highlight or flag a particular sample in your data, you can do so by adding a "data label".  This is displayed in the graph as a colored flag at the top of the chart, with a dashed line indicating the exact sample (timestamp) it refers to.  To use this feature in your chart, add a `label` property in your X/Y data like this:
+
+```js
+[
+	{ "x": 1634275440, "y": 1.99 },
+	{ "x": 1634275500, "y": 2.16 },
+	{
+		"x": 1634275560,
+		"y": 2.40,
+		"label": {
+			"text": "Alert",
+			"color": "red"
+		}
+	}
+]
+```
+
+This example shows two standard data rows with only `x` and `y` properties, followed by a third row that also has a `label`.  This indicates which data sample should be flagged.  The `label` should point to an object with the following properties:
+
+| Label Property | Default Value | Description |
+|----------------|---------------|-------------|
+| `text` | `""` | **(Required)** The display text for the label, e.g. `"Alert"`. |
+| `color` | (Auto) | The background color of the label box (defaults to the layer color). |
+| `fontColor` | `white` | The font color of the label text (any CSS color string accepted). |
+| `lineWidth` | `1` | The width of the line to draw for the label data point (in pixels). |
+| `dashStyle` | `[2,2]` | The dash pattern of the line (see [setLineDash at MDN](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash)). |
+| `strokeStyle` | `rgba(128, 128, 128, 0.75)` | The color of the line stroke (any CSS color string accepted). |
+| `tooltip` | `false` | Set this to `true` to also highlight the layer in the hover tooltip, using the label color. |
+
+This is an effective way to direct the user's attention to a particular data sample.  You can include as many labels as you want in your chart.  Each one will render a separate colored flag onto the canvas.  The flags are all rendered on top of all layers.
+
+To see this feature in action, check out the [Data Labels](https://pixlcore.com/software/pixl-chart/demos/data-labels.html) demo.  This demo also showcases the `tooltip` label property, which, in a multi-layer chart, highlights *which layer* has the flagged data sample, by colorizing the text in the hover tooltip to match the label color.
+
+## Zooming
+
+By default, your entire dataset is scaled to fit into the chart, more or less.  That is, your oldest timestamp will be aligned to the left side, your newest timestamp on the right side, your lowest Y value at the bottom (well, more likely [zero](#zerofloor)), and your highest Y value at the top (well, minus some [headroom](#autoheadroom)).  The point being, your entire dataset will be visible in the chart.  You can, however, artificially "zoom" in on a portion of your data.  To do this, provide a [zoom](#zoom) configuration object, and populate it with these four properties:
+
+| Zoom Property | Description |
+|---------------|-------------|
+| `xMin` | A custom minimum X value (timestamp) to align to the left side of the chart. |
+| `xMax` | A custom maximum X value (timestamp) to align to the right side of the chart. |
+| `yMin` | A custom minimum Y value, to align with the bottom or the chart ([zeroFloor](#zerofloor) overrides this). |
+| `yMax` | A custom maximum Y value, to align with the top of the chart ([headroom](#autoheadroom) will adjust this). |
+
+To determine the current `xMin`, `xMax`, `yMin` and `yMax` values before zooming, consult the [dataLimits](#datalimits) object, which is automatically computed every render cycle based on your dataset.
+
+Please specify [Epoch Seconds](https://en.wikipedia.org/wiki/Unix_time) for the `xMin` and `xMax` properties, even if your dataset uses [Epoch Milliseconds](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now).
+
+Once you provide your custom `zoom` object, you can instruct the chart to rerender by calling [update()](#update).
+
+Note that if you use the zoom feature, it is *highly* recommended that you also enable the [clip](#clip) feature, to prevent data from drawing outside the bounds.  Also, if you zoom in vertically (i.e. constricting `yMin` and/or `yMax`), you will probably want to disable both [zeroFloor](#zerofloor) and [autoHeadroom](#autoheadroom), so your limits aren't automatically adjusted.
+
+## Hover Overlay
+
+Using the [event system](#events) provided in pixl-chart, you can register event listeners to be notified when the mouse enters and exits your chart.  Example:
+
+```js
+chart.on('mouseover', function(event) {
+	// mouse is hovering over the chart
+});
+chart.on('mouseout', function(event) {
+	// mouse has left the chart
+});
+```
+
+Additionally, when the mouse hovers over a chart, a special overlay `<div>` is automatically created and floated on top of everything, to track the mouse position and prevent interference with the hover tooltip and its elements.  The `<div>` will always have a class name of `pxc_tt_overlay` (short for "pixl-chart tooltip overlay").  The element is always empty, but is sized and positioned precisely atop the chart.  You can use this to render your own hover HTML elements which appear and disappear based on the mouse hover state.  Example:
+
+```js
+chart.on('mouseover', function(event) {
+	// show our own hover components
+	document.querySelector('.pxc_tt_overlay').innerHTML = '<div class="my_custom_component">Button 1, Button 2, etc.</div>';
+});
+chart.on('mouseout', function(event) {
+	// mouse has left the chart
+	// no action required
+});
+```
+
+Note that you don't have to do anything on `mouseout`, because the `.pxc_tt_overlay` element is automatically destroyed.
+
+One possible use here is to render your own "toolbar" with clickable buttons (e.g. snapshot, download, etc.), which appear when the mouse hovers over your chart, and disappear when the mouse leaves.
 
 ## Configuration
 
@@ -845,315 +1157,6 @@ The `mouseup` event is emitted when the user releases a mouse button inside the 
 ### click
 
 The `click` event is emitted when the user presses and then releases a mouse button inside the chart.  Your event listener will be passed the raw [MouseEvent](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent) object from the browser.
-
-## Adding Layers
-
-Whether you specify your [layers](#layers) as part of the constructor options, or you call [addLayer()](#addlayer) or [addLayers()](#addlayers), the layer format is always the same.  At a bare minimum, each layer should have a `title` and a `data` array.  Here is an example:
-
-```js
-chart.addLayer({
-	"title": "app01.prod",
-	"data": [
-		{ "x": 1634270340, "y": 40 },
-		{ "x": 1634270400, "y": 41 },
-		{ "x": 1634270460, "y": 111 },
-		{ "x": 1634270520, "y": 81 },
-		{ "x": 1634270580, "y": 35 },
-		{ "x": 1634270640, "y": 64 },
-		{ "x": 1634270700, "y": 60 },
-		{ "x": 1634270760, "y": 33 },
-		{ "x": 1634270820, "y": 28 },
-		{ "x": 1634270880, "y": 26 }
-	]
-});
-```
-
-In the above example the layer is named `app01.prod` and has 10 data points.  Each data point has an `x` and `y` property.  The `x` is the timestamp, and should be in [Epoch Seconds](https://en.wikipedia.org/wiki/Unix_time) or [Epoch Milliseconds](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now).  It can also be a full date/time string, as long as it can be parsed by [Date.parse()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse), but note that this incurs a performance penalty.  The `y` is the data value itself, and should be numerical.  It should also match your data type set by [dataType](#datatype).
-
-Note that the `x` values **must** always be pre-sorted (in ascending order).
-
-An alternate data format is also accepted, which is an array of X/Y values.  Example of this:
-
-```js
-chart.addLayer({
-	"title": "app01.prod",
-	"data": [
-		[ 1634270340, 40 ],
-		[ 1634270400, 41 ],
-		[ 1634270460, 111 ],
-		[ 1634270520, 81 ],
-		[ 1634270580, 35 ],
-		[ 1634270640, 64 ],
-		[ 1634270700, 60 ],
-		[ 1634270760, 33 ],
-		[ 1634270820, 28 ],
-		[ 1634270880, 26 ]
-	]
-});
-```
-
-However, note you must use the X/Y data format (e.g. `{"x":1634270880, "y":26}`) in order to use [Data Labels](#data-labels).
-
-### Layer Properties
-
-Here is the full list of available properties you can specify in each layer:
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `title` | String | **(Required)** The title (display label) for the layer. |
-| `data` | Array | **(Required)** An array of data points for the layer. |
-| `color` | String | Optionally specify a color for the layer.  By default one is plucked from the global [colors](#colors) list. |
-| `opacity` | Number | Specify the layer opacity (alpha transparency), which defaults to `1.0`. |
-| `hidden` | Boolean | Set this to `true` to completely hide the layer from the graph (includes legend and tooltip). |
-| `smoothing` | Boolean | If global [smoothing](#smoothing) is disabled, you can re-enable it here, on a layer-by-layer basis. |
-| `fill` | Mixed | Optionally override the global [fill](#fill) on a layer-by-layer basis. |
-| `fillStyle` | Mixed | Optionally set a custom fill style with your own color or gradient.  See [fillStyle at MDN](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle). |
-| `stroke` | Boolean | Optionally override the global [stroke](#stroke) on a layer-by-layer basis. |
-| `lineWidth` | Number | Optionally override the global [lineWidth](#linewidth) on a layer-by-layer basis. |
-| `lineJoin` | String | Optionally override the global [lineJoin](#linejoin) on a layer-by-layer basis. |
-| `lineCap` | String | Optionally override the global [lineCap](#linecap) on a layer-by-layer basis. |
-| `lineDashes` | Array | Optionally override the global [lineDashes](#linedashes) on a layer-by-layer basis. |
-
-## Chart Management
-
-In addition to the global `Chart` class, pixl-chart also provides a global `ChartManager` singleton object, which manages all charts on the page.  This system is responsible for handling live resize, scroll-into-view, and smooth redraws that do not hang the browser, even with a large amount of charts on the same page.
-
-When your chart's [autoManage](#automanage) property is set to `true` (which is the default), your chart is automatically added to `ChartManager` and managed for you.
-
-Typically, you will not need to call the `ChartManager` object directly, unless you have multiple charts on the page and wish to update them all.  Instead of calling [render()](#render) or [update()](#update) on each of your charts, consider simply calling `ChartManager.check()` once:
-
-```js
-ChartManager.check();
-```
-
-The `check()` method in the `ChartManager` object will iterate over all the charts and figure out which ones were updated and require a redraw.  It will then automatically rerender them all, using sequential animation frames, as to not hang the browser.  It will also delay rerenders of any offscreen charts until they scroll back into view.  This is a **much** better way of redrawing a suite of charts than redrawing each one yourself.
-
-The `ChartManager` object also provides an API to access all of the charts on the page, so you don't have to keep track of them all yourself.  You can get to them by accessing the `charts` property, which is an array:
-
-```js
-var charts = ChartManager.charts;
-
-charts.forEach( function(chart) {
-	// do something with each chart
-} );
-```
-
-### Auto Resizing
-
-As part of the chart management system, pixl-chart also handles live resizes of your charts.  That is, it will automatically rerender your charts when the `<canvas>` DOM elements change size.  To support this system with your charts, you must first make sure the [autoManage](#automanage) and [autoResize](#autoresize) properties are enabled (this is the default).  Then, make sure that your `<canvas>` elements do not have a fixed size, but rather follow their parent element like this:
-
-```css
-canvas {
-	width: 100%;
-	height: 100%;
-}
-```
-
-Then, your chart will take up all available space in its parent element, and resize as needed to fit.
-
-## Line Smoothing
-
-By default, all your graph lines are smoothed using [monotone cubic interpolation](https://en.wikipedia.org/wiki/Monotone_cubic_interpolation).  This means, they are interpolated in a way that produces nice, smooth curves between each data point.  If you set the [smoothing](#smoothing) property to `false`, the lines will instead be rendered using linear interpolation (i.e. straight lines with no curves).
-
-This setting also affects the animation smoothness in the hover tooltip (i.e. how smoothly the hover tooltip and highlighted lines / dots follow the mouse cursor).  When [smoothing](#smoothing) is disabled, the smooth hover animation is also disabled, and the hover elements snap into place instantly.
-
-See the [Linear Interpolation](https://pixlcore.com/software/pixl-chart/demos/linear-interpolation.html) demo for an example of both types.  There are buttons below the chart which toggle smoothing on/off.
-
-## Legend Display
-
-By default, pixl-chart will display a "legend" directly below the chart data and X axis labels.  A legend is basically just a list of your layers, each with its title and a dot representing its color.  Here is an example legend:
-
-![Legend](https://pixlcore.com/software/pixl-chart/legend.png)
-
-To enable the legend, simply set the [legend](#legend) property to `true` (this is the default).  Everything else is automatic.
-
-If your chart has too many layers, and/or the layer titles are too long, the legend will automatically disappear.  This is to prevent it from eating up too much of your chart's vertical real estate.  This limit is controlled by the [legendMaxLines](#legendmaxlines) property.  By default, if the legend will eat up more than 2 lines, then it will automatically hide itself.
-
-## Dates and Times
-
-By default, pixl-chart will display dates and times based on your browser's locale and time zone settings.  The locale governs things like how to format months, days, hours, and so on, whereas the time zone controls how the raw [Epoch](https://en.wikipedia.org/wiki/Unix_time) seconds from your dataset are converted to human-readable dates/times (i.e. offset from GMT, +/- daylight savings time, etc.).
-
-Both of these properties are configurable.  If you want to override the default auto-detect behavior, you can set the [locale](#locale) property to any value from [this list of language codes](https://en.wikipedia.org/wiki/Language_localisation#Language_tags_and_codes), e.g. `en-US`.  You can also override the default auto-detected time zone, and set the [timeZone](#timezone) property to any value from [this list of time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), e.g. `America/Los_Angeles`.
-
-## Dark Mode
-
-Both light mode and dark mode are supported in pixl-chart.  This is done by rendering the chart with an alpha transparent background, and using neutral colors and grays, so they show up and look nice on both light and dark backgrounds.  This is true for the chart itself, as well as all PNG images generated from it (see [Snapshots](#snapshots) below).
-
-For supporting the hover tooltip with a dark theme, please add a `dark` class to the HTML `<body>` element when dark mode is active, and remove it if the theme is changed back to light.  This acts as a hint for pixl-chart to switch around its internal CSS for the hover elements, which are rendered as HTML.
-
-For example, if your page auto-detects and switches into dark mode based on user preference, you can use this code snippet at startup:
-
-```js
-if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-	document.body.classList.add('dark');
-}
-```
-
-You can also add an event listener to switch modes dynamically:
-
-```js
-window.matchMedia('(prefers-color-scheme: dark)').addListener('change', function(event) {
-	if (event.matches) document.body.classList.add('dark');
-	else document.body.classList.remove('dark');
-});
-```
-
-## Snapshots
-
-Since pixl-chart renders everything into an [HTML5 Canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) element, it is easy to take a "snapshot" of a chart and produce an image file.  You can actually do this yourself by accessing the underlying `<canvas>` element, but pixl-chart provides an API wrapper with some added niceties.  Here is an example:
-
-```js
-chart.snapshot({ type: 'blob', format: 'png', quality: 1.0 }, function(blob) {
-	// do something with blob
-});
-```
-
-In the above example we're asking for a [Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob), which is useful for uploading to a server using [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData).  You can alternatively ask for a [Data URL](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs) by setting the `type` to `url`.
-
-Here are the options you can specify to `snapshot()`:
-
-| Property | Default Value | Description |
-|----------|---------------|-------------|
-| `type` | `blob` | Specify the type of image output you want, either `blob` or `url`. |
-| `format` | `png` | Specify the desired image file format, e.g. `webp`, `png` or `jpeg`. |
-| `quality` | `1.0` | Specify the desired image quality from `0.0` (worst) to `1.0` (best). |
-
-You can also include any [chart configuration properties](#configuration) in the options object, to override them in the snapshot.  For example, you can specify a fixed pixel [width](#width), [height](#height) and [density](#density) for your snapshot image:
-
-```js
-var opts = {
-	type: 'url', 
-	format: 'webp', 
-	quality: 1.0, 
-	width: 1024, 
-	height: 512, 
-	density: 1
-};
-chart.snapshot(opts, function(url) {
-	// do something with data url
-});
-```
-
-One reason you might want to override these additional properties is to ensure that the image resolution is fixed, regardless of the chart's canvas size in the page, and the user's screen density (retina, etc.).
-
-Please note that when generating JPEG images, the default transparent background in the chart becomes black.  To work around this, provide a fixed opaque [background](#background) color in the options object that you pass to `snapshot()`.
-
-### Downloads
-
-As a convenience, pixl-chart provides an easy API to download a snapshot image.  This initiates the native browser file download behavior, and it will download the snapped image to the user's local machine.  You can optionally provide a filename to use, or omit it to have pixl-chart generate one for you based on the chart title and image format.  Example use:
-
-```js
-chart.download();
-```
-
-This would produce a snapshot using all the default options (PNG, 100% quality) and download it using a generated filename from the chart title.  Here is another example which specifies some options:
-
-```js
-chart.download({
-	filename: 'my-high-res-chart.png',
-	format: 'png', 
-	quality: 1.0, 
-	width: 1024, 
-	height: 512, 
-	density: 1
-});
-```
-
-The `download()` method accepts all the same options as [snapshot()](#snapshots), along with `filename`, and any [chart configuration properties](#configuration) like [width](#width), [height](#height) and [density](#density).
-
-## Headroom
-
-When [autoHeadroom](#autoheadroom) is set to `true` (which is the default), pixl-chart will attempt to add some vertical "headroom" above your chart's highest Y value.  The reason for this is to make the chart generally more pleasing to look at.  The library tries to do this by landing the topmost Y value on a round number, and scaling the visual data to fit.
-
-For example, if your chart's highest Y value is `395`, then the headroom system will round up the value to `400` for the top of the chart.  The same logic applies to all powers of 10, including floating point values below `1.0`, and byte values up to a TB (terabyte).  Note that it will never add more than 25% headroom.
-
-For a nice demo of this feature, check out the [Large Dataset](https://pixlcore.com/software/pixl-chart/demos/large-dataset.html) demo.  Here, the data's highest Y value is `5,497`, but since [autoHeadroom](#autoheadroom) is enabled (by default), the library rounds this up to `6,000`.  As a result, the topmost value and all the vertical labels are all nice round numbers.  This also naturally adds a small amount of "padding" above the data, so the highest peak doesn't run right into the top of the chart.
-
-If you don't like this behavior, simply set [autoHeadroom](#autoheadroom) to `false` in your chart, and your data's highest Y value will be honored, matching it up exactly with the top of the chart.
-
-## Data Labels
-
-If you need to highlight or flag a particular sample in your data, you can do so by adding a "data label".  This is displayed in the graph as a colored flag at the top of the chart, with a dashed line indicating the exact sample (timestamp) it refers to.  To use this feature in your chart, add a `label` property in your X/Y data like this:
-
-```js
-[
-	{ "x": 1634275440, "y": 1.99 },
-	{ "x": 1634275500, "y": 2.16 },
-	{
-		"x": 1634275560,
-		"y": 2.40,
-		"label": {
-			"text": "Alert",
-			"color": "red"
-		}
-	}
-]
-```
-
-This example shows two standard data rows with only `x` and `y` properties, followed by a third row that also has a `label`.  This indicates which data sample should be flagged.  The `label` should point to an object with the following properties:
-
-| Label Property | Default Value | Description |
-|----------------|---------------|-------------|
-| `text` | `""` | **(Required)** The display text for the label, e.g. `"Alert"`. |
-| `color` | (Auto) | The background color of the label box (defaults to the layer color). |
-| `fontColor` | `white` | The font color of the label text (any CSS color string accepted). |
-| `lineWidth` | `1` | The width of the line to draw for the label data point (in pixels). |
-| `dashStyle` | `[2,2]` | The dash pattern of the line (see [setLineDash at MDN](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash)). |
-| `strokeStyle` | `rgba(128, 128, 128, 0.75)` | The color of the line stroke (any CSS color string accepted). |
-| `tooltip` | `false` | Set this to `true` to also highlight the layer in the hover tooltip, using the label color. |
-
-This is an effective way to direct the user's attention to a particular data sample.  You can include as many labels as you want in your chart.  Each one will render a separate colored flag onto the canvas.  The flags are all rendered on top of all layers.
-
-To see this feature in action, check out the [Data Labels](https://pixlcore.com/software/pixl-chart/demos/data-labels.html) demo.  This demo also showcases the `tooltip` label property, which, in a multi-layer chart, highlights *which layer* has the flagged data sample, by colorizing the text in the hover tooltip to match the label color.
-
-## Zooming
-
-By default, your entire dataset is scaled to fit into the chart, more or less.  That is, your oldest timestamp will be aligned to the left side, your newest timestamp on the right side, your lowest Y value at the bottom (well, more likely [zero](#zerofloor)), and your highest Y value at the top (well, minus some [headroom](#autoheadroom)).  The point being, your entire dataset will be visible in the chart.  You can, however, artificially "zoom" in on a portion of your data.  To do this, provide a [zoom](#zoom) configuration object, and populate it with these four properties:
-
-| Zoom Property | Description |
-|---------------|-------------|
-| `xMin` | A custom minimum X value (timestamp) to align to the left side of the chart. |
-| `xMax` | A custom maximum X value (timestamp) to align to the right side of the chart. |
-| `yMin` | A custom minimum Y value, to align with the bottom or the chart ([zeroFloor](#zerofloor) overrides this). |
-| `yMax` | A custom maximum Y value, to align with the top of the chart ([headroom](#autoheadroom) will adjust this). |
-
-To determine the current `xMin`, `xMax`, `yMin` and `yMax` values before zooming, consult the [dataLimits](#datalimits) object, which is automatically computed every render cycle based on your dataset.
-
-Please specify [Epoch Seconds](https://en.wikipedia.org/wiki/Unix_time) for the `xMin` and `xMax` properties, even if your dataset uses [Epoch Milliseconds](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now).
-
-Once you provide your custom `zoom` object, you can instruct the chart to rerender by calling [update()](#update).
-
-Note that if you use the zoom feature, it is *highly* recommended that you also enable the [clip](#clip) feature, to prevent data from drawing outside the bounds.  Also, if you zoom in vertically (i.e. constricting `yMin` and/or `yMax`), you will probably want to disable both [zeroFloor](#zerofloor) and [autoHeadroom](#autoheadroom), so your limits aren't automatically adjusted.
-
-## Hover Overlay
-
-Using the [event system](#events) provided in pixl-chart, you can register event listeners to be notified when the mouse enters and exits your chart.  Example:
-
-```js
-chart.on('mouseover', function(event) {
-	// mouse is hovering over the chart
-});
-chart.on('mouseout', function(event) {
-	// mouse has left the chart
-});
-```
-
-Additionally, when the mouse hovers over a chart, a special overlay `<div>` is automatically created and floated on top of everything, to track the mouse position and prevent interference with the hover tooltip and its elements.  The `<div>` will always have a class name of `pxc_tt_overlay` (short for "pixl-chart tooltip overlay").  The element is always empty, but is sized and positioned precisely atop the chart.  You can use this to render your own hover HTML elements which appear and disappear based on the mouse hover state.  Example:
-
-```js
-chart.on('mouseover', function(event) {
-	// show our own hover components
-	document.querySelector('.pxc_tt_overlay').innerHTML = '<div class="my_custom_component">Button 1, Button 2, etc.</div>';
-});
-chart.on('mouseout', function(event) {
-	// mouse has left the chart
-	// no action required
-});
-```
-
-Note that you don't have to do anything on `mouseout`, because the `.pxc_tt_overlay` element is automatically destroyed.
-
-One possible use here is to render your own "toolbar" with clickable buttons (e.g. snapshot, download, etc.), which appear when the mouse hovers over your chart, and disappear when the mouse leaves.
 
 # Development
 
