@@ -334,7 +334,7 @@ Both of these properties are configurable.  If you want to override the default 
 
 ## Dark Mode
 
-Both light mode and dark mode are supported in pixl-chart.  This is done by rendering the chart with an alpha transparent background, and using neutral colors and grays, so they show up and look nice on both light and dark backgrounds.  This is true for the chart itself, as well as all PNG images generated from it (see [Snapshots](#snapshots) below).
+Both light mode and dark mode are supported in pixl-chart.  This is done by rendering the chart with an alpha transparent background, and using neutral colors and grays, so they show up and look nice on both light and dark backgrounds.  This is true for the chart itself, as well as all PNG images generated from it (see [Snapshots](#snapshots)).
 
 For supporting the hover tooltip with a dark theme, please add a `dark` class to the HTML `<body>` element when dark mode is active, and remove it if the theme is changed back to light.  This acts as a hint for pixl-chart to switch around its internal CSS for the hover elements, which are rendered as HTML.
 
@@ -524,7 +524,7 @@ Here are all the configuration properties you can set, in alphabetical order:
 |------|---------|
 | Boolean | `true` |
 
-This causes the chart to automatically add "headroom" above the highest Y value, typically ending it on a round number.  This makes the charts more pleasing to the eye in most cases.  See [Headroom](#headroom) below for more details.
+This causes the chart to automatically add "headroom" above the highest Y value, typically ending it on a round number.  This makes the charts more pleasing to the eye in most cases.  See [Headroom](#headroom) for more details.
 
 ### autoManage
 
@@ -532,7 +532,7 @@ This causes the chart to automatically add "headroom" above the highest Y value,
 |------|---------|
 | Boolean | `true` |
 
-This causes the chart to automatically be managed by the global chart manager.  This automatically monitors offscreen charts and renders them as they scroll into view.  It is also the basis behind the auto-resize system.  See [Chart Management](#chart-management) below for more details.
+This causes the chart to automatically be managed by the global chart manager.  This automatically monitors offscreen charts and renders them as they scroll into view.  It is also the basis behind the auto-resize system.  See [Chart Management](#chart-management) for more details.
 
 ### autoResize
 
@@ -540,7 +540,7 @@ This causes the chart to automatically be managed by the global chart manager.  
 |------|---------|
 | Boolean | `true` |
 
-This feature allows the chart to automatically redraw itself when the underlying `<canvas>` element changes size.  Note that in order for this to work, [autoManage](#automanage) also needs to be enabled.  See [Auto Resizing](#auto-resizing) below for more details.
+This feature allows the chart to automatically redraw itself when the underlying `<canvas>` element changes size.  Note that in order for this to work, [autoManage](#automanage) also needs to be enabled.  See [Auto Resizing](#auto-resizing) for more details.
 
 ### background
 
@@ -572,7 +572,7 @@ This sets the horizontal and vertical tick line color.  It can be any CSS color 
 |------|---------|
 | Boolean | `false` |
 
-Optionally clip the data drawing to the viewable area.  This is disabled by default for performance reasons, but also because datasets almost always fit into the bounds with no clipping necessary.  This property only comes into play when you artificially zoom in (see [Zooming](#zooming) below), in which case clipping becomes necessary.
+Optionally clip the data drawing to the viewable area.  This is disabled by default for performance reasons, but also because datasets almost always fit into the bounds with no clipping necessary.  This property only comes into play when you artificially zoom in (see [Zooming](#zooming)), in which case clipping becomes necessary.
 
 ### colors
 
@@ -668,7 +668,7 @@ When [delta](#delta) mode is enabled, setting `divideByDelta` to `true` will div
 
 This is the pixel density to use when rendering the chart canvas.  A value of `1` is for standard screens, and `2` is for most "retina" a.k.a. "HiDPI" screens (e.g. iPhones, iPads, MacBook Pros).  The default value is auto-detected, which is pulled from [window.devicePixelRatio](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio).
 
-This does not affect the physical size of the canvas on the page -- it only affects how tightly the pixels are packed together.  It will, however, affect the resolution and size of downloaded images (see [Snapshots](#snapshots) below).
+This does not affect the physical size of the canvas on the page -- it only affects how tightly the pixels are packed together.  It will, however, affect the resolution and size of downloaded images (see [Snapshots](#snapshots)).
 
 If you set this to a fixed value and it *doesn't* match the user's screen density, the canvas will be scaled to fit.
 
@@ -680,7 +680,7 @@ If you set this to a fixed value and it *doesn't* match the user's screen densit
 
 This controls the fill opacity for your dataset rendering.  The default is `0.5` which is half-transparent.  If your chart has multiple layers, it is generally a good idea to set this to `0` (or `false`) to disable the fill entirely, and only render lines (see [stroke](#stroke)).
 
-You can override `fill` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) below for details.
+You can override `fill` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) for details.
 
 ### floatPrecision
 
@@ -696,7 +696,7 @@ For displaying floating point numbers in your data values, this sets the maximum
 |------|---------|
 | String | `rgb(128, 128, 128)` |
 
-This controls the font color for virtually all the text rendered in the chart, from the title, to the axis labels, to the hover tooltip.  The only thing this *doesn't* control is data label text color (see [Data Labels](#data-labels) below).
+This controls the font color for virtually all the text rendered in the chart, from the title, to the axis labels, to the hover tooltip.  The only thing this *doesn't* control is data label text color (see [Data Labels](#data-labels)).
 
 The default font color is neutral gray, so it looks nice on both light and dark themes.
 
@@ -770,7 +770,7 @@ Inside the hover tooltip box, each layer is displayed along with its data value 
 |------|---------|
 | Array | `[]` |
 
-You can optionally specify your layer data when you first construct the chart, by including a `layers` array.  See [Adding Layers](#adding-layers) below for details.
+You can optionally specify your layer data when you first construct the chart, by including a `layers` array.  See [Adding Layers](#adding-layers) for details.
 
 ### legend
 
@@ -804,7 +804,7 @@ This is the amount of padding to allocate underneath the legend, in pixels.  Thi
 
 This determines the shape used to draw the end points of lines, assuming [stroke](#stroke) is enabled.  See [lineCap at MDN](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineCap) for more details.
 
-You can override `lineCap` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) below for details.
+You can override `lineCap` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) for details.
 
 ### lineDashes
 
@@ -822,7 +822,7 @@ By default, all lines in the chart are solid.  To render dashed lines, provide a
 
 This would produce a pattern of a 4-pixel-wide solid segment, followed by a 2-pixel-wide gap, and then repeat.  See [setLineDash at MDN](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash) for more details.
 
-You can override `lineDashes` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) below for details.
+You can override `lineDashes` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) for details.
 
 ### lineJoin
 
@@ -832,7 +832,7 @@ You can override `lineDashes` on a layer-by-layer basis.  See [Layer Properties]
 
 This determines the shape used to join two line segments where they meet.  The default is `round`.  See [lineJoin at MDN](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineJoin) for more details.
 
-You can override `lineJoin` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) below for details.
+You can override `lineJoin` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) for details.
 
 ### lineWidth
 
@@ -842,7 +842,7 @@ You can override `lineJoin` on a layer-by-layer basis.  See [Layer Properties](#
 
 This controls the width of the lines rendered in your chart, in pixels.  If you have a large dataset with complex patterns, you might want to set this to `1`.
 
-You can override `lineWidth` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) below for details.
+You can override `lineWidth` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) for details.
 
 ### locale
 
@@ -896,7 +896,7 @@ This controls whether the subtitle is displayed or not.  By default, the subtitl
 
 By default, your graph data lines are smoothed using [monotone cubic interpolation](https://en.wikipedia.org/wiki/Monotone_cubic_interpolation).  If you set `smoothing` to `false`, the lines will instead be rendered using straight linear interpolation.  Also see [smoothingMaxSamples](#smoothingmaxsamples), which can disable smoothing.
 
-You can override `smoothing` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) below for details.
+You can override `smoothing` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) for details.
 
 ### smoothingMaxSamples
 
@@ -916,7 +916,7 @@ The idea here is that at at certain point, smoothing can't really be seen becaus
 
 The `stroke` property controls whether lines are rendered for your data or not.  This defaults to `true`.  One style option is to set this to `false`, then set [fill](#fill) to some non-zero opacity, to get a pure area fill without an outline.  See the [Custom Fill Styles Demo](https://pixlcore.com/software/pixl-chart/demos/custom-fill-styles.html) for an example of this.
 
-You can override `stroke` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) below for details.
+You can override `stroke` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) for details.
 
 ### subtitle
 
@@ -1010,7 +1010,7 @@ By default, pixl-chart will "zero" the chart at the bottom edge.  Meaning, the b
 |------|---------|
 | Object | `null` |
 
-Use the optional `zoom` property to artificially "zoom in" your dataset.  If specified, `zoom` should be an object with `xMin`, `xMax`, `yMin` and `yMax` properties.  See [Zooming](#zooming) below for details on how to use this.
+Use the optional `zoom` property to artificially "zoom in" your dataset.  If specified, `zoom` should be an object with `xMin`, `xMax`, `yMin` and `yMax` properties.  See [Zooming](#zooming) for details on how to use this.
 
 ## API
 
@@ -1022,7 +1022,7 @@ Here are the available methods you can call on your `Chart` instance.
 VOID addLayer( OBJECT )
 ```
 
-The `addLayer()` method adds a layer to the chart.  This can be called at any time, even after a chart is rendered (this will trigger a follow-up render).  See [Adding Layers](#adding-layers) below for details on how to format your layer object.
+The `addLayer()` method adds a layer to the chart.  This can be called at any time, even after a chart is rendered (this will trigger a follow-up render).  See [Adding Layers](#adding-layers) for details on how to format your layer object.
 
 ### addLayers
 
@@ -1030,7 +1030,7 @@ The `addLayer()` method adds a layer to the chart.  This can be called at any ti
 VOID addLayers( ARRAY )
 ```
 
-The `addLayers()` method adds multiple layers to the chart at once.  This can be called at any time, even after a chart is rendered (this will trigger a follow-up render).  See [Adding Layers](#adding-layers) below for details on how to format your layer data.
+The `addLayers()` method adds multiple layers to the chart at once.  This can be called at any time, even after a chart is rendered (this will trigger a follow-up render).  See [Adding Layers](#adding-layers) for details on how to format your layer data.
 
 ### render
 
@@ -1046,7 +1046,7 @@ The `render()` method renders the chart into the attached `<canvas>` element.  I
 VOID update()
 ```
 
-The `update()` method tells pixl-chart that the current chart has new or updated data (or changed configuration options), and needs to be re-rendered.  This is the "nice" way of updating a chart, versus calling [render()](#render) directly.  See [Chart Management](#chart-management) below for details.
+The `update()` method tells pixl-chart that the current chart has new or updated data (or changed configuration options), and needs to be re-rendered.  This is the "nice" way of updating a chart, versus calling [render()](#render) directly.  See [Chart Management](#chart-management) for details.
 
 ### snapshot
 
@@ -1054,7 +1054,7 @@ The `update()` method tells pixl-chart that the current chart has new or updated
 VOID snapshot( OPTIONS, CALLBACK )
 ```
 
-The `snapshot()` method takes a snapshot of the chart, and produces a flat image (WebP, PNG or JPEG format).  You can request a data URL, or a blob, and override other settings as well.  See [Snapshots](#snapshots) below for details.
+The `snapshot()` method takes a snapshot of the chart, and produces a flat image (WebP, PNG or JPEG format).  You can request a data URL, or a blob, and override other settings as well.  See [Snapshots](#snapshots) for details.
 
 ### download
 
@@ -1062,7 +1062,7 @@ The `snapshot()` method takes a snapshot of the chart, and produces a flat image
 VOID download( OPTIONS )
 ```
 
-The `download()` method takes a snapshot of the chart, and downloads the image to your local machine.  You can specify a number of settings here including format, quality, and override chart settings as well.  See [Downloads](#downloads) below for details.
+The `download()` method takes a snapshot of the chart, and downloads the image to your local machine.  You can specify a number of settings here including format, quality, and override chart settings as well.  See [Downloads](#downloads) for details.
 
 ### on
 
@@ -1070,7 +1070,7 @@ The `download()` method takes a snapshot of the chart, and downloads the image t
 VOID on( NAME, LISTENER )
 ```
 
-The `on()` method adds an event listener for a specific event.  You need to specify an event name, and a listener function.  See [Events](#events) below for details.
+The `on()` method adds an event listener for a specific event.  You need to specify an event name, and a listener function.  See [Events](#events) for details.
 
 ### off
 
@@ -1078,7 +1078,7 @@ The `on()` method adds an event listener for a specific event.  You need to spec
 VOID off( NAME, LISTENER )
 ```
 
-The `off()` method removes an event listener from a specific event.  You need to specify an event name, and the listener function you previously specified with [on()](#on).  See [Events](#events) below for details.
+The `off()` method removes an event listener from a specific event.  You need to specify an event name, and the listener function you previously specified with [on()](#on).  See [Events](#events) for details.
 
 ### destroy
 
@@ -1136,7 +1136,7 @@ chart.on('render', function() {
 
 ### mouseover
 
-The `mouseover` event is emitted when the user's mouse cursor enters the chart.  Your event listener will be passed the raw [MouseEvent](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent) object from the browser.  See [Hover Overlay](#hover-overlay) below for details on how to use this, and other events.
+The `mouseover` event is emitted when the user's mouse cursor enters the chart.  Your event listener will be passed the raw [MouseEvent](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent) object from the browser.  See [Hover Overlay](#hover-overlay) for details on how to use this, and other events.
 
 ### mousemove
 
