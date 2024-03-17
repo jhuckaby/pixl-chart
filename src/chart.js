@@ -411,6 +411,45 @@ class Chart {
 				}
 			break;
 			
+			case 'milliseconds':
+				if (limits.yMax < 1.0) {
+					if (limits.yMax > 0.015) limits.yMax = Math.ceil( limits.yMax * 100 ) / 100;
+					if (limits.yMax > 0.15) limits.yMax = Math.ceil( limits.yMax * 10 ) / 10;
+					if (limits.yMax >= 0.7) limits.yMax = 1.0;
+				}
+				else if (limits.yMax < 10) {
+					limits.yMax = Math.ceil( limits.yMax );
+					if (limits.yMax >= 7) limits.yMax = 10;
+				}
+				else {
+					limits.yMax = Math.ceil( limits.yMax );
+					if (limits.yMax > 15) limits.yMax = Math.ceil( limits.yMax / 10 ) * 10;
+					if (limits.yMax > 150) limits.yMax = Math.ceil( limits.yMax / 100 ) * 100;
+					if (limits.yMax >= 1000) {
+						limits.yMax = Math.ceil( limits.yMax / 1000 ) * 1000;
+						if (limits.yMax < 60000) {
+							if (limits.yMax < 10000) {
+								if (limits.yMax >= 7000) limits.yMax = 10000;
+							}
+							else {
+								if (limits.yMax > 15000) limits.yMax = Math.ceil( limits.yMax / 10000 ) * 10000;
+							}
+							if (limits.yMax > 60000) limits.yMax = 60000;
+						}
+						else if (limits.yMax < 3600000) {
+							limits.yMax = Math.ceil( limits.yMax / 60000 ) * 60000;
+							if (limits.yMax > 900000) limits.yMax = Math.ceil( limits.yMax / 600000 ) * 600000;
+						}
+						else if (limits.yMax < 86400000) {
+							limits.yMax = Math.ceil( limits.yMax / 3600000 ) * 3600000;
+						}
+						else {
+							limits.yMax = Math.ceil( limits.yMax / 86400000 ) * 86400000;
+						}
+					}
+				}
+			break;
+			
 			case 'integer':
 			case 'float':
 				if (limits.yMax < 1.0) {
@@ -1263,6 +1302,11 @@ class Chart {
 				output = ChartUtils.getTextFromSeconds( value, true );
 			break;
 			
+			case 'milliseconds':
+				if (value < 1000) output = '' + Math.floor(value) + ' ms';
+				else output = ChartUtils.getTextFromSeconds( value / 1000, true );
+			break;
+			
 			case 'integer': 
 				if (value >= 1000000000) output = '' + Math.floor(value / 1000000000) + 'B';
 				else if (value >= 1000000) output = '' + Math.floor(value / 1000000) + 'M';
@@ -1295,6 +1339,11 @@ class Chart {
 			
 			case 'seconds':
 				output = ChartUtils.getTextFromSeconds( value, false );
+			break;
+			
+			case 'milliseconds':
+				if (value < 1000) output = '' + ChartUtils.shortFloat(output, this.floatPrecision) + ' ms';
+				else output = ChartUtils.getTextFromSeconds( value / 1000, false );
 			break;
 			
 			case 'integer': 

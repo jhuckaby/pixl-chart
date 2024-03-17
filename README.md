@@ -642,7 +642,11 @@ If you are displaying a graph that prefers non-binary divisions, e.g. 1K = 1000,
 
 #### seconds
 
-Setting `dataType` to `seconds` means that your graph should display time-based data values (i.e. elapsed time) for the Y axis.  The labels will be quantized based on their range, e.g. seconds, minutes, hours and/or days, with varying degrees of accuracy for display purposes.
+Setting `dataType` to `seconds` means that your graph should display time-based data values (i.e. elapsed time in seconds) for the Y axis.  The labels will be quantized based on their range, e.g. seconds, minutes, hours and/or days, with varying degrees of accuracy for display purposes.
+
+#### milliseconds
+
+Setting `dataType` to `milliseconds` means that your graph should display time-based data values (i.e. elapsed time in milliseconds) for the Y axis.  The labels will be quantized based on their range, e.g. milliseconds (if under one second), then seconds, minutes, hours and/or days, with varying degrees of accuracy for display purposes.
 
 ### delta
 
