@@ -336,6 +336,9 @@ class Chart {
 		
 		if (this.autoHeadroom) this.addHeadroom();
 		
+		if (this.minHorizScale && ((limits.xMax - limits.xMin) < this.minHorizScale)) limits.xMax = limits.xMin + this.minHorizScale;
+		if (this.minVertScale && ((limits.yMax - limits.yMin) < this.minVertScale)) limits.yMax = limits.yMin + this.minVertScale;
+		
 		limits.width = limits.xMax - limits.xMin;
 		limits.height = limits.yMax - limits.yMin;
 		
@@ -412,8 +415,11 @@ class Chart {
 			break;
 			
 			case 'milliseconds':
-				if (limits.yMax < 1.0) {
+				if (limits.yMax < 0.1) {
 					if (limits.yMax > 0.015) limits.yMax = Math.ceil( limits.yMax * 100 ) / 100;
+					if (limits.yMax >= 0.07) limits.yMax = 0.1;
+				}
+				else if (limits.yMax < 1.0) {
 					if (limits.yMax > 0.15) limits.yMax = Math.ceil( limits.yMax * 10 ) / 10;
 					if (limits.yMax >= 0.7) limits.yMax = 1.0;
 				}
@@ -452,8 +458,11 @@ class Chart {
 			
 			case 'integer':
 			case 'float':
-				if (limits.yMax < 1.0) {
+				if (limits.yMax < 0.1) {
 					if (limits.yMax > 0.015) limits.yMax = Math.ceil( limits.yMax * 100 ) / 100;
+					if (limits.yMax >= 0.07) limits.yMax = 0.1;
+				}
+				else if (limits.yMax < 1.0) {
 					if (limits.yMax > 0.15) limits.yMax = Math.ceil( limits.yMax * 10 ) / 10;
 					if (limits.yMax >= 0.7) limits.yMax = 1.0;
 				}

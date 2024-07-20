@@ -36,6 +36,7 @@
 			- [float](#float)
 			- [bytes](#bytes)
 			- [seconds](#seconds)
+			- [milliseconds](#milliseconds)
 		+ [delta](#delta)
 		+ [divideByDelta](#dividebydelta)
 		+ [density](#density)
@@ -58,6 +59,8 @@
 		+ [lineJoin](#linejoin)
 		+ [lineWidth](#linewidth)
 		+ [locale](#locale)
+		+ [minHorizScale](#minhorizscale)
+		+ [minVertScale](#minvertscale)
 		+ [padding](#padding)
 		+ [progressive](#progressive)
 		+ [showDataGaps](#showdatagaps)
@@ -855,6 +858,22 @@ You can override `lineWidth` on a layer-by-layer basis.  See [Layer Properties](
 | String | (Auto-detect) |
 
 This is the locale used for formatting dates and times, e.g. `en-US`.  The locale determine how dates are formatted in terms of month names, abbreviations, suffixes, and symbols used.  See the [list of language codes on Wikipedia](https://en.wikipedia.org/wiki/Language_localisation#Language_tags_and_codes) for a full list of these.
+
+### minHorizScale
+
+| Type | Default |
+|------|---------|
+| Number | (Unset) |
+
+Use this to prevent the horizontal "scale" (the distance between the left and right visible data points) from rendering below a minimum value.  For example, set this to `60` to set the minimum time tange to 1 minute.  This only affects how the data is scaled and rendered into the canvas.  For more fine-grained control, see [zoom](#zoom).
+
+### minVertScale
+
+| Type | Default |
+|------|---------|
+| Number | (Unset) |
+
+Use this to prevent the vertical "scale" (the distance between the highest and lowest visible data points) from rendering below a minimum value.  For example, if this is set to `100` and all the data samples are below that value, the topmost level in the chart will still be at the 100 mark.  This only affects how the data is scaled and rendered into the canvas.  For more fine-grained control, see [zoom](#zoom).
 
 ### padding
 
