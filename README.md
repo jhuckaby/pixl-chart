@@ -147,6 +147,7 @@ pixl-chart does not come anywhere near the features offered by libraries such as
 - [Many Layers](https://pixlcore.com/software/pixl-chart/demos/many-layers.html)
 - [Large Dataset](https://pixlcore.com/software/pixl-chart/demos/large-dataset.html)
 - [Irregular Dataset](https://pixlcore.com/software/pixl-chart/demos/irregular-dataset.html)
+- [Negative Numbers](https://pixlcore.com/software/pixl-chart/demos/negative.html)
 - [Daily Range](https://pixlcore.com/software/pixl-chart/demos/daily-range.html)
 - [Monthly Range](https://pixlcore.com/software/pixl-chart/demos/monthly-range.html)
 - [Yearly Range](https://pixlcore.com/software/pixl-chart/demos/yearly-range.html)

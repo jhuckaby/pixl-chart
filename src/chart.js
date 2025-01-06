@@ -501,18 +501,34 @@ class Chart {
 		ctx.textBaseline = 'middle';
 		ctx.fillStyle = this.fontColor;
 		ctx.strokeStyle = this.borderColor;
+		ctx.lineWidth = 1;
 		
 		var labels = [];
 		var widest = 0;
+		var zlabel = false;
 		
 		// generate and measure all labels
 		for (var idx = 0; idx <= this.vertTicks; idx++) {
 			var value = limits.yMin + (((limits.yMax - limits.yMin) / this.vertTicks) * idx);
+			if (!value && (limits.yMax > 0) && (limits.yMin < 0)) zlabel = true;
 			var text = this.formatDataValue(value, this.dataType, this.dataSuffix);
 			var info = ctx.measureText(text);
 			if (info.width > widest) widest = info.width;
 			var y = (bounds.y + bounds.height) - ((idx / this.vertTicks) * bounds.height);
 			labels.push({ text, info, y, value });
+		}
+		
+		if (!zlabel && (limits.yMax > 0) && (limits.yMin < 0)) {
+			// y axis crosses the zero boundary -- add special label + dotted line
+			// (only if one wasn't already created organically above)
+			zlabel = true;
+			var value = 0;
+			var info = ctx.measureText(text);
+			if (info.width > widest) widest = info.width;
+			var pos = this.getDotPos({ x:0, y:value });
+			var y = pos.y;
+			labels.push({ text: "", info, y, value });
+			labels.sort( function(a, b) { return a.value - b.value; } );
 		}
 		
 		// if there are any duplicate labels, only show the extremes
@@ -531,6 +547,17 @@ class Chart {
 		// draw lines and labels
 		for (var idx = 0, len = labels.length; idx < len; idx++) {
 			var label = labels[idx];
+			if (!label.value && zlabel) {
+				ctx.lineWidth = 2;
+				ctx.setLineDash([4, 4]);
+				ctx.strokeStyle = this.fontColor;
+			}
+			else {
+				ctx.lineWidth = 1;
+				ctx.setLineDash([]);
+				ctx.strokeStyle = this.borderColor;
+			}
+			
 			ctx.beginPath();
 			ctx.moveTo( bounds.x, label.y );
 			ctx.lineTo( bounds.x + bounds.width, label.y );
@@ -558,6 +585,7 @@ class Chart {
 		ctx.textBaseline = 'top';
 		ctx.fillStyle = this.fontColor;
 		ctx.strokeStyle = this.borderColor;
+		ctx.lineWidth = 1;
 		
 		var labels = [];
 		var date_fmt = this.dateRange;
@@ -1312,14 +1340,14 @@ class Chart {
 			break;
 			
 			case 'milliseconds':
-				if (value < 1000) output = '' + Math.floor(value) + ' ms';
+				if (Math.abs(value) < 1000) output = '' + Math.floor(value) + ' ms';
 				else output = ChartUtils.getTextFromSeconds( value / 1000, true );
 			break;
 			
 			case 'integer': 
-				if (value >= 1000000000) output = '' + Math.floor(value / 1000000000) + 'B';
-				else if (value >= 1000000) output = '' + Math.floor(value / 1000000) + 'M';
-				else if (value >= 10000) output = '' + Math.floor(value / 1000) + 'K';
+				if (Math.abs(value) >= 1000000000) output = '' + Math.floor(value / 1000000000) + 'B';
+				else if (Math.abs(value) >= 1000000) output = '' + Math.floor(value / 1000000) + 'M';
+				else if (Math.abs(value) >= 10000) output = '' + Math.floor(value / 1000) + 'K';
 				else output = ChartUtils.numFmt.format( Math.floor(value) ); 
 			break;
 			
@@ -1351,7 +1379,7 @@ class Chart {
 			break;
 			
 			case 'milliseconds':
-				if (value < 1000) output = '' + ChartUtils.shortFloat(output, this.floatPrecision) + ' ms';
+				if (Math.abs(value) < 1000) output = '' + ChartUtils.shortFloat(output, this.floatPrecision) + ' ms';
 				else output = ChartUtils.getTextFromSeconds( value / 1000, false );
 			break;
 			
@@ -1618,6 +1646,9 @@ const ChartUtils = {
 		bytes = Math.floor(bytes);
 		if (!precision) precision = 10;
 		
+		var neg = '';
+		if (bytes < 0) { bytes =- bytes; neg = '-'; }
+		
 		if (bytes >= 1024) {
 			bytes = Math.floor( (bytes / 1024) * precision ) / precision;
 			if (bytes >= 1024) {
@@ -1626,15 +1657,15 @@ const ChartUtils = {
 					bytes = Math.floor( (bytes / 1024) * precision ) / precision;
 					if (bytes >= 1024) {
 						bytes = Math.floor( (bytes / 1024) * precision ) / precision;
-						return bytes + ' TB';
+						return neg + bytes + ' TB';
 					} 
-					else return bytes + ' GB';
+					else return neg + bytes + ' GB';
 				} 
-				else return bytes + ' MB';
+				else return neg + bytes + ' MB';
 			}
-			else return bytes + ' K';
+			else return neg + bytes + ' K';
 		}
-		else return bytes + ' B';
+		else return neg + bytes + ' B';
 	},
 	
 	shortFloat(value, places) {
@@ -1642,8 +1673,8 @@ const ChartUtils = {
 		// return as a string (so we can support '0.0')
 		if (!places) places = 2;
 		var mult = Math.pow(10, places);
-		var value = Math.floor(parseFloat(value || 0) * mult) / mult;
-		if (value == Math.floor(value)) value = '' + value + '.0';
+		var value = Math.round(parseFloat(value || 0) * mult) / mult;
+		if (value == Math.round(value)) value = '' + value + '.0';
 		return ''+value;
 	},
 	
