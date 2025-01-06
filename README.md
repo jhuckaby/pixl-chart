@@ -153,6 +153,7 @@ pixl-chart does not come anywhere near the features offered by libraries such as
 - [Yearly Range](https://pixlcore.com/software/pixl-chart/demos/yearly-range.html)
 - [Real-Time Data](https://pixlcore.com/software/pixl-chart/demos/real-time.html)
 - [Dynamic Layers](https://pixlcore.com/software/pixl-chart/demos/dynamic-layers.html)
+- [Click to Zoom](https://pixlcore.com/software/pixl-chart/demos/click-to-zoom.html)
 - [Line Styles](https://pixlcore.com/software/pixl-chart/demos/line-styles.html)
 - [Linear Interpolation](https://pixlcore.com/software/pixl-chart/demos/linear-interpolation.html)
 - [Data Gaps](https://pixlcore.com/software/pixl-chart/demos/data-gaps.html)
