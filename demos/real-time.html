@@ -35,11 +35,11 @@
 		chart.render();
 		
 		setInterval( function() {
-			chart.layers[0].data.push({
+			var row = {
 				x: Math.floor( (new Date()).getTime() / 1000 ),
 				y: Math.floor( Math.random() * 100 )
-			});
-			chart.update();
+			};
+			chart.addLayerSample(0, row, 100);
 		}, 1000 );
 	</script>
 </body>

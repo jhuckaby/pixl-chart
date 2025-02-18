@@ -216,9 +216,11 @@ class Chart {
 			
 			if (this.delta) {
 				for (var idx = layer.data.length - 1; idx >= 1; idx--) {
+					layer.data[idx].oy = layer.data[idx].y;
 					layer.data[idx].y -= layer.data[idx - 1].y;
-					if (this.divideByDelta) layer.data[idx].y /= (layer.data[idx].x - layer.data[idx - 1].x);
+					if (this.divideByDelta) layer.data[idx].y /= ((layer.data[idx].x - layer.data[idx - 1].x) || 1);
 				}
+				layer.data[0].oy = layer.data[0].y;
 				layer.data[0].y = 0;
 			}
 		}
@@ -231,6 +233,50 @@ class Chart {
 		// add multiple layers at once
 		var self = this;
 		layers.forEach( function(layer) { self.addLayer(layer); } );
+		this.dirty = true;
+	}
+	
+	addLayerSample(idx, row, max) {
+		// append data sample to single layer, massage values as needed
+		var layer = this.layers[idx];
+		
+		if (Array.isArray(row)) {
+			// convert array to object
+			row = { x: row[0], y: row[1] };
+		}
+		
+		if (typeof(row.x) == 'string') {
+			// assume date/time string, parse it
+			row.x = (new Date(row.x)).getTime() / 1000;
+		}
+		else if (row.x > 9999999999) {
+			// assume millisecond-epoch, divide by 1000
+			row.x /= 1000;
+		}
+		
+		if (layer.offsetX || layer.offsetY) {
+			// apply layer offsets
+			row.x += layer.offsetX || 0;
+			row.y += layer.offsetY || 0;
+		}
+		
+		if (this.delta) {
+			// apply delta logic
+			row.oy = row.y;
+			
+			if (layer.data.length) {
+				var idx = layer.data.length;
+				row.y -= layer.data[idx - 1].oy;
+				if (this.divideByDelta) row.y /= ((row.x - layer.data[idx - 1].x) || 1);
+			}
+			else {
+				row.y = 0;
+			}
+		}
+		
+		// all done, push row onto layer
+		layer.data.push(row);
+		if (max && (layer.data.length > max)) layer.data.shift();
 		this.dirty = true;
 	}
 	

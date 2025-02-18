@@ -82,6 +82,7 @@
 	* [API](#api)
 		+ [addLayer](#addlayer)
 		+ [addLayers](#addlayers)
+		+ [addLayerSample](#addlayersample)
 		+ [render](#render)
 		+ [update](#update)
 		+ [snapshot](#snapshot)
@@ -1056,6 +1057,20 @@ VOID addLayers( ARRAY )
 ```
 
 The `addLayers()` method adds multiple layers to the chart at once.  This can be called at any time, even after a chart is rendered (this will trigger a follow-up render).  See [Adding Layers](#adding-layers) for details on how to format your layer data.
+
+### addLayerSample
+
+```
+VOID addLayerSample( INDEX, OBJECT, MAX )
+```
+
+The `addLayerSample()` method appends a single data sample to the layer specified by its index number.  While you can manually manipulate the `layer.data` array, this method properly massages the new values in the same way as `addLayer()`.  For e.g. this converts the date if needed, prepares samples for [delta](#delta) mode, applies offsets, and so on.  It will also mark the chart as "dirty" so it redraws on the next frame.  Example:
+
+```js
+chart.addLayerSample( 0, { x:1739679710, y:45 }, 60 );
+```
+
+This would append the sample to the first layer (`0`), and apply a max of `60` samples.  So if this is the 61st sample in the set, it will automatically drop the first one to shift forward in time.
 
 ### render
 
