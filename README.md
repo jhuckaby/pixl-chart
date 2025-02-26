@@ -75,6 +75,7 @@
 		+ [titleSize](#titlesize)
 		+ [titleStyle](#titlestyle)
 		+ [vertLabelPadding](#vertlabelpadding)
+		+ [vertLabelSide](#vertlabelside)
 		+ [vertTicks](#vertticks)
 		+ [width](#width)
 		+ [zeroFloor](#zerofloor)
