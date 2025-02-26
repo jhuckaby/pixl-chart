@@ -117,7 +117,7 @@ pixl-chart does not come anywhere near the features offered by libraries such as
 ## Features
 
 - Zero dependencies.
-- Lightweight (24K minified, 8K gzipped).
+- Lightweight (28K minified, 9K gzipped).
 - Highly performant (tested up to 100,000 samples across 100 layers).
 - Full retina (HiDPI) support.
 - Supports custom timezones and locales.
@@ -155,6 +155,7 @@ pixl-chart does not come anywhere near the features offered by libraries such as
 - [Real-Time Data](https://pixlcore.com/software/pixl-chart/demos/real-time.html)
 - [Dynamic Layers](https://pixlcore.com/software/pixl-chart/demos/dynamic-layers.html)
 - [Click to Zoom](https://pixlcore.com/software/pixl-chart/demos/click-to-zoom.html)
+- [Label Sides](https://pixlcore.com/software/pixl-chart/demos/label-sides.html)
 - [Line Styles](https://pixlcore.com/software/pixl-chart/demos/line-styles.html)
 - [Linear Interpolation](https://pixlcore.com/software/pixl-chart/demos/linear-interpolation.html)
 - [Data Gaps](https://pixlcore.com/software/pixl-chart/demos/data-gaps.html)
@@ -1003,6 +1004,16 @@ If a title is specified, it will be displayed using this font style.  By default
 | Number | `10` |
 
 This is the number of pixels to pad around the vertical labels (on both the left and right sides).  The default is `10` pixels.  The vertical labels are those that run along the left side of the chart, which appear for each [vertical tick](#vertticks).
+
+### vertLabelSide
+
+| Type | Default |
+|------|---------|
+| String | `left` |
+
+This specifies which side to render the vertical (Y axis) labels on.  Specify via `left` or `right`.  The default is `left`.
+
+Note that if you change this to the `right` side, you should also adjust the [padding](#padding).  It is recommended that you swap the values of `padding.left` and `padding.right`, to compensate for the labels switching sides.  For example, the default padding is `0` pixels on the left (because the labels are there) and `10` pixels on the right (because nothing is there).  So if you want right-side labels, then you should set `padding.left` to `10` and `padding.right` to `0`.  See the [Label Sides Demo](https://pixlcore.com/software/pixl-chart/demos/label-sides.html) for an example.
 
 ### vertTicks
 

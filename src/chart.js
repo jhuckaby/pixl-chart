@@ -30,6 +30,7 @@ class Chart {
 		this.horizTicks = 6;
 		this.vertTicks = 6;
 		this.vertLabelPadding = 10;
+		this.vertLabelSide = 'left';
 		this.horizLabelPadding = 25;
 		this.borderColor = 'rgba(128, 128, 128, 0.25)';
 		this.density = window.devicePixelRatio || 1;
@@ -588,7 +589,7 @@ class Chart {
 		
 		// adjust bounds
 		bounds.width -= (widest + (this.vertLabelPadding * 2));
-		bounds.x += (widest + (this.vertLabelPadding * 2));
+		if (this.vertLabelSide == 'left') bounds.x += (widest + (this.vertLabelPadding * 2));
 		
 		// draw lines and labels
 		for (var idx = 0, len = labels.length; idx < len; idx++) {
@@ -611,7 +612,10 @@ class Chart {
 			
 			// prevent duplicate adjacent labels
 			if ((idx == 0) || (idx == len - 1) || (!has_dupes)) {
-				ctx.fillText( label.text, (bounds.x - label.info.width) - this.vertLabelPadding, label.y );
+				switch (this.vertLabelSide) {
+					case 'left': ctx.fillText( label.text, (bounds.x - label.info.width) - this.vertLabelPadding, label.y ); break;
+					case 'right': ctx.fillText( label.text, bounds.x + bounds.width + this.vertLabelPadding, label.y ); break;
+				}
 			}
 		}
 		
@@ -635,18 +639,30 @@ class Chart {
 		
 		var labels = [];
 		var date_fmt = this.dateRange;
+		var idx_start = 0;
+		var idx_end = this.horizTicks;
 		
-		for (var idx = 0; idx < this.horizTicks; idx++) {
+		if (this.vertLabelSide == 'right') {
+			idx_start++;
+			idx_end++;
+		}
+		
+		for (var idx = idx_start; idx < idx_end; idx++) {
 			var epoch = limits.xMin + (((limits.xMax - limits.xMin) / this.horizTicks) * idx);
 			var text = this.formatDate(epoch, date_fmt);
 			var x = bounds.x + ((idx / this.horizTicks) * bounds.width);
-			labels.push({ text, x });
+			labels.push({ text, x, line: true });
+		}
+		
+		switch (this.vertLabelSide) {
+			case 'left': labels[0].line = false; break;
+			case 'right': labels[ labels.length - 1 ].line = false; break;
 		}
 		
 		// draw lines and labels
 		for (var idx = 0, len = labels.length; idx < len; idx++) {
 			var label = labels[idx];
-			if (idx > 0) {
+			if (label.line) {
 				ctx.beginPath();
 				ctx.moveTo( label.x, bounds.y );
 				ctx.lineTo( label.x, bounds.y + bounds.height + 8 );
