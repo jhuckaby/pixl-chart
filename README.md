@@ -19,6 +19,7 @@
 	* [Data Labels](#data-labels)
 	* [Zooming](#zooming)
 	* [Hover Overlay](#hover-overlay)
+	* [Flatten Layers](#flatten-layers)
 	* [Configuration](#configuration)
 		+ [autoHeadroom](#autoheadroom)
 		+ [autoManage](#automanage)
@@ -41,6 +42,7 @@
 		+ [divideByDelta](#dividebydelta)
 		+ [density](#density)
 		+ [fill](#fill)
+		+ [flatten](#flatten)
 		+ [floatPrecision](#floatprecision)
 		+ [fontColor](#fontcolor)
 		+ [fontFamily](#fontfamily)
@@ -155,6 +157,7 @@ pixl-chart does not come anywhere near the features offered by libraries such as
 - [Yearly Range](https://pixlcore.com/software/pixl-chart/demos/yearly-range.html)
 - [Real-Time Data](https://pixlcore.com/software/pixl-chart/demos/real-time.html)
 - [Dynamic Layers](https://pixlcore.com/software/pixl-chart/demos/dynamic-layers.html)
+- [Flatten Layers](https://pixlcore.com/software/pixl-chart/demos/flatten-layers.html)
 - [Click to Zoom](https://pixlcore.com/software/pixl-chart/demos/click-to-zoom.html)
 - [Label Sides](https://pixlcore.com/software/pixl-chart/demos/label-sides.html)
 - [Line Styles](https://pixlcore.com/software/pixl-chart/demos/line-styles.html)
@@ -520,6 +523,41 @@ Note that you don't have to do anything on `mouseout`, because the `.pxc_tt_over
 
 One possible use here is to render your own "toolbar" with clickable buttons (e.g. snapshot, download, etc.), which appear when the mouse hovers over your chart, and disappear when the mouse leaves.
 
+## Flatten Layers
+
+If your chart has multiple layers, but you want to offer your users a way to temporarily "flatten" all the layers in to a single combo display layer (for e.g. to show the average, min, max or total), set a new `flatten` object property on your chart.  It accepts the following properties:
+
+| Property Name | Default Value | Description |
+|---------------|---------------|-------------|
+| `type` | `average` | This specifies how to merge the data values.  Supported algorithms are `average`, `minimum`, `maximum` and `total`. |
+| `title` | n/a | Optionally override the entire chart [title](#title) while flatten mode is active. |
+| `tooltipTitle` | n/a | Optionally override the layer title inside hover tooltips.  This defaults to the chart title. |
+| `prefixTitle` | n/a | Optionally prepend a prefix onto the chart title when flatten mode is active. |
+| `color` | (Color 0) | Customize the color of the combined flattened layer.  This defaults to the first color in the [default colors](#colors) list. |
+| `fill` | `0.5` | Optionally customize the [fill](#fill) of the combo flattened layer.  This defaults to `0.5` (half opacity). |
+
+So the idea is, after some user interaction (i.e. they select a flatten mode in a drop-down menu) populate the `flatten` object on your chart, and then call `update()` to schedule a rerender.  Here is an example:
+
+```js
+chart.flatten = {
+	type: 'average',
+	tooltipTitle: 'Average',
+	prefixTitle: 'Average'
+};
+chart.update();
+```
+
+This would enable flatten mode, which will collapse all your layers into one (non-destructively), and merge the data together by averaging all the layer values together.  It will also set a custom `tooltipTitle` set to "Average", as well as a `prefixTitle` set to the same string.
+
+To revert back to the standard multi-layer view, simply remove the `flatten` object (or set it to `null`) and call `update()` again:
+
+```js
+chart.flatten = null;
+chart.update();
+```
+
+See the [Flatten Layers Demo](https://pixlcore.com/software/pixl-chart/demos/flatten-layers.html) for an example use case.
+
 ## Configuration
 
 You pass in configuration options by specifying them as properties of the object you pass to the `Chart` class constructor.  Also, in many cases you can just set them directly on your `Chart` instance.
@@ -693,6 +731,14 @@ If you set this to a fixed value and it *doesn't* match the user's screen densit
 This controls the fill opacity for your dataset rendering.  The default is `0.5` which is half-transparent.  If your chart has multiple layers, it is generally a good idea to set this to `0` (or `false`) to disable the fill entirely, and only render lines (see [stroke](#stroke)).
 
 You can override `fill` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) for details.
+
+### flatten
+
+| Type | Default |
+|------|---------|
+| Object | `null` |
+
+This is used for flattening all layers into a single combined display layer, using a variety of algorithms (avg, min, max, total).  See [Flatten Layers](#flatten-layers) for details.
 
 ### floatPrecision
 

@@ -57,6 +57,7 @@ class Chart {
 		this.height = 0;
 		this.progressive = false;
 		this.delta = false;
+		this.flatten = null;
 		
 		this.dirty = false;
 		this.hidden = false;
@@ -331,6 +332,7 @@ class Chart {
 			height: height - (padding.top + padding.bottom)
 		};
 		
+		this.flattenLayers();
 		this.locateDataLimits();
 		
 		this.renderTitle();
@@ -339,6 +341,74 @@ class Chart {
 		this.renderHorizAxis();
 		this.renderDataGaps();
 		this.renderData();
+	}
+	
+	flattenLayers() {
+		// optionally flatten all layers into a single layer
+		if (!this.flatten) return;
+		
+		var flatten = this.flatten;
+		var merge_type = flatten.type || 'avg';
+		var yes_round = !!this.dataType.match(/(integer|bytes|seconds|milliseconds)/);
+		var time_index = {};
+		
+		// make sure we have all required props
+		if (!('color' in flatten)) flatten.color = this.colors[0];
+		if (!('fill' in flatten)) flatten.fill = 0.5;
+		
+		this.layers.forEach( function(layer) {
+			layer.data.forEach( function(row) {
+				if (!time_index[row.x]) {
+					time_index[row.x] = { 
+						x: row.x,
+						total: row.y, 
+						count: 1, 
+						min: row.y, 
+						max: row.y
+					};
+				}
+				else {
+					time_index[row.x].total += row.y;
+					time_index[row.x].count++;
+					if (row.y < time_index[row.x].min) time_index[row.x].min = row.y;
+					if (row.y > time_index[row.x].max) time_index[row.x].max = row.y;
+				}
+			} );
+		} );
+		
+		var rows = [];
+		var sorted_times = Object.keys(time_index).sort( function(a, b) {
+			return parseInt(a) - parseInt(b);
+		});
+		
+		sorted_times.forEach( function(key) {
+			var row = time_index[key];
+			switch (merge_type) {
+				case 'avg': 
+				case 'average': 
+					var avg = row.total / row.count;
+					if (yes_round) avg = Math.round(avg);
+					rows.push({ x: row.x, y: avg }); 
+				break;
+				
+				case 'total': 
+					rows.push({ x: row.x, y: row.total }); 
+				break;
+				
+				case 'min': 
+				case 'minimum':
+					rows.push({ x: row.x, y: row.min }); 
+				break;
+				
+				case 'max': 
+				case 'maximum':
+					rows.push({ x: row.x, y: row.max }); 
+				break;
+			}
+		});
+		
+		flatten.idx = 0;
+		flatten.data = rows;
 	}
 	
 	locateDataLimits() {
@@ -351,7 +421,20 @@ class Chart {
 			// user has supplied custom data limits (i.e. zoom)
 			limits = this.zoom;
 		}
+		else if (this.flatten) {
+			// layers have been collapsed into one
+			var data = this.flatten.data, x = 0, y = 0;
+			for (var idx = 0, len = data.length; idx < len; idx++) {
+				x = data[idx].x;
+				y = data[idx].y;
+				if ((limits.xMin === null) || (x < limits.xMin)) limits.xMin = x;
+				if ((limits.xMax === null) || (x > limits.xMax)) limits.xMax = x;
+				if ((limits.yMin === null) || (y < limits.yMin)) limits.yMin = y;
+				if ((limits.yMax === null) || (y > limits.yMax)) limits.yMax = y;
+			}
+		}
 		else {
+			// normal layers
 			this.layers.forEach( function(layer) {
 				if (layer.hidden) return;
 				var data = layer.data, x = 0, y = 0;
@@ -682,7 +765,11 @@ class Chart {
 		// render title and eat up available bounds space
 		var ctx = this.ctx;
 		var bounds = this.bounds;
-		if (!this.title.length) return;
+		
+		var title = this.title;
+		if (this.flatten && this.flatten.title) title = this.flatten.title;
+		else if (this.flatten && this.flatten.prefixTitle) title = this.flatten.prefixTitle + ' ' + title;
+		if (!title.length) return;
 		
 		ctx.save();
 		ctx.scale( this.density, this.density );
@@ -692,13 +779,13 @@ class Chart {
 		ctx.textBaseline = 'middle';
 		
 		if (this.showSubtitle) {
-			ctx.fillText( this.title, bounds.x + (bounds.width / 2), bounds.y + this.titlePadding );
+			ctx.fillText( title, bounds.x + (bounds.width / 2), bounds.y + this.titlePadding );
 			
 			ctx.font = 'normal ' + this.fontSize + 'px ' + this.fontFamily;
 			ctx.fillText( this.getSubtitle(), bounds.x + (bounds.width / 2), bounds.y + (this.titleSize / 1) + this.titlePadding + 1 );
 		}
 		else {
-			ctx.fillText( this.title, bounds.x + (bounds.width / 2), bounds.y + (this.titleSize / 2) + this.titlePadding );
+			ctx.fillText( title, bounds.x + (bounds.width / 2), bounds.y + (this.titleSize / 2) + this.titlePadding );
 		}
 		
 		ctx.restore();
@@ -745,7 +832,9 @@ class Chart {
 		var lines = [];
 		var ctx = this.ctx;
 		var bounds = this.bounds;
+		
 		if (!this.legend) return;
+		if (this.flatten) return;
 		
 		ctx.save();
 		ctx.scale( this.density, this.density );
@@ -821,6 +910,18 @@ class Chart {
 		this.dataLabels = [];
 		this.isSmooth = true;
 		
+		if (this.flatten) {
+			// special render pipeline for flatten mode
+			var layer = this.flatten;
+			if ((!layer.smoothing && !this.smoothing) || (layer.data.length > this.smoothingMaxSamples)) {
+				this.isSmooth = false;
+			}
+			layer.dirty = true;
+			this.renderOneLayer(layer);
+			return;
+		}
+		
+		// scan all layers for smoothness
 		for (var idx = this.layers.length - 1; idx >= 0; idx--) {
 			var layer = this.layers[idx];
 			if ((!layer.smoothing && !this.smoothing) || (layer.data.length > this.smoothingMaxSamples)) {
@@ -854,12 +955,12 @@ class Chart {
 		requestAnimationFrame( this.renderNextLayer.bind(this) );
 	}
 	
-	renderOneLayer() {
+	renderOneLayer(layer) {
 		// render first dirty layer
 		var ctx = this.ctx;
 		var bounds = this.bounds;
 		
-		var layer = this.layers.filter( function(layer) { return layer.dirty && !layer.hidden; } ).shift();
+		if (!layer) layer = this.layers.filter( function(layer) { return layer.dirty && !layer.hidden; } ).shift();
 		if (!layer) return false;
 		
 		ctx.save();
@@ -943,6 +1044,7 @@ class Chart {
 		var gaps = [];
 		
 		if (!this.showDataGaps) return;
+		if (this.flatten) return;
 		
 		ctx.save();
 		ctx.scale( self.density, self.density );
@@ -1219,7 +1321,9 @@ class Chart {
 		if (this.tooltip && (this.tooltip.epoch == epoch)) return;
 		
 		var family = [];
-		this.layers.forEach( function(layer, idx) {
+		var layers = this.flatten ? [this.flatten] : this.layers;
+		
+		layers.forEach( function(layer, idx) {
 			if (layer.hidden) return;
 			var data = layer.data;
 			var row = null;
@@ -1275,7 +1379,7 @@ class Chart {
 			
 			html += '<tr>';
 			html += '<td><div class="pxc_tt_dot" style="background-color:' + color + '; ' + sty + '"></div></td>';
-			html += '<td><div class="pxc_tt_title" style="' + sty + '">' + layer.title + '</div></td>';
+			html += '<td><div class="pxc_tt_title" style="' + sty + '">' + (layer.tooltipTitle || layer.title) + '</div></td>';
 			html += '<td><div class="pxc_tt_value" style="' + sty + '">' + text + '</div></td>';
 			html += '</tr>';
 		} );
@@ -1549,8 +1653,11 @@ class Chart {
 	download(opts = {}) {
 		// convert chart to image and download it
 		if (!opts.filename) {
+			var title = this.title;
+			if (this.flatten && this.flatten.title) title = this.flatten.title;
+			
 			var fmt = (opts.format || 'png').replace(/^image\//, '').toLowerCase();
-			opts.filename = this.title.replace(/[^\w\-\.]+/g, '') + '.' + fmt;
+			opts.filename = title.replace(/[^\w\-\.]+/g, '') + '.' + fmt;
 		}
 		var filename = opts.filename;
 		delete opts.filename;
