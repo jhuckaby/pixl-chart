@@ -373,6 +373,7 @@ class Chart {
 					if (row.y < time_index[row.x].min) time_index[row.x].min = row.y;
 					if (row.y > time_index[row.x].max) time_index[row.x].max = row.y;
 				}
+				if (row.label) time_index[row.x].label = row.label;
 			} );
 		} );
 		
@@ -382,29 +383,34 @@ class Chart {
 		});
 		
 		sorted_times.forEach( function(key) {
-			var row = time_index[key];
+			var index = time_index[key];
+			var row = { x: index.x };
+			if (index.label) row.label = index.label;
+			
 			switch (merge_type) {
 				case 'avg': 
 				case 'average': 
-					var avg = row.total / row.count;
+					var avg = index.total / index.count;
 					if (yes_round) avg = Math.round(avg);
-					rows.push({ x: row.x, y: avg }); 
+					row.y = avg;
 				break;
 				
 				case 'total': 
-					rows.push({ x: row.x, y: row.total }); 
+					row.y = index.total;
 				break;
 				
 				case 'min': 
 				case 'minimum':
-					rows.push({ x: row.x, y: row.min }); 
+					row.y = index.min;
 				break;
 				
 				case 'max': 
 				case 'maximum':
-					rows.push({ x: row.x, y: row.max }); 
+					row.y = index.max;
 				break;
-			}
+			} // switch merge_type
+			
+			rows.push(row);
 		});
 		
 		flatten.idx = 0;
@@ -918,6 +924,7 @@ class Chart {
 			}
 			layer.dirty = true;
 			this.renderOneLayer(layer);
+			this.renderDataLabels();
 			return;
 		}
 		
