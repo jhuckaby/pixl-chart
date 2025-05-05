@@ -57,6 +57,8 @@ class Chart {
 		this.height = 0;
 		this.progressive = false;
 		this.delta = false;
+		this.deltaMinValue = false;
+		this.divideByDelta = false;
 		this.flatten = null;
 		
 		this.dirty = false;
@@ -220,6 +222,7 @@ class Chart {
 				for (var idx = layer.data.length - 1; idx >= 1; idx--) {
 					layer.data[idx].oy = layer.data[idx].y;
 					layer.data[idx].y -= layer.data[idx - 1].y;
+					if ((this.deltaMinValue !== false) && (layer.data[idx].y < this.deltaMinValue)) layer.data[idx].y = this.deltaMinValue;
 					if (this.divideByDelta) layer.data[idx].y /= ((layer.data[idx].x - layer.data[idx - 1].x) || 1);
 				}
 				layer.data[0].oy = layer.data[0].y;
@@ -269,6 +272,7 @@ class Chart {
 			if (layer.data.length) {
 				var idx = layer.data.length;
 				row.y -= layer.data[idx - 1].oy;
+				if ((this.deltaMinValue !== false) && (row.y < this.deltaMinValue)) row.y = this.deltaMinValue;
 				if (this.divideByDelta) row.y /= ((row.x - layer.data[idx - 1].x) || 1);
 			}
 			else {
