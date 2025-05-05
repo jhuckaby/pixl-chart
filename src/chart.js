@@ -813,11 +813,23 @@ class Chart {
 		switch (this.dateRange) {
 			case 'minute':
 			case 'hour':
-			case 'day':
 				var left = this.formatDate( limits.xMin, 'tooltip' );
 				var right = this.formatDate( limits.xMax, 'tooltip' );
 				if (left == right) subtitle = left;
 				else subtitle = left + ' - ' + this.formatDate( limits.xMax, 'hour' );
+			break;
+			
+			case 'day':
+				var opts = Object.assign({}, this.dateStyles.tooltip);
+				var left = this.formatDate( limits.xMin, opts );
+				var right = this.formatDate( limits.xMax, opts );
+				if (left == right) subtitle = left;
+				else {
+					var day_left = this.formatDate( limits.xMin, 'month' );
+					var day_right = this.formatDate( limits.xMax, 'month' );
+					if (day_left == day_right) subtitle = left + ' - ' + this.formatDate( limits.xMax, 'hour' );
+					else subtitle = left + ' - ' + right;
+				}
 			break;
 			
 			case 'month':
