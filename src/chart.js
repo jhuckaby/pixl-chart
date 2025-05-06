@@ -1141,7 +1141,6 @@ class Chart {
 		if (fill) {
 			ctx.fillStyle = layer.fillStyle || ChartUtils.alphaColor( color, fill );
 			ctx.beginPath();
-			// ctx.moveTo( bounds.x, bounds.y + bounds.height );
 			
 			var pos = null;
 			for (var idx = 0, len = rows.length; idx < len; idx++) {
@@ -1151,7 +1150,6 @@ class Chart {
 				if (idx == len - 1) ctx.lineTo( pos.x, bounds.y + bounds.height );
 			}
 			
-			// ctx.lineTo( bounds.x + bounds.width, bounds.y + bounds.height );
 			ctx.fill();
 		} // fill
 		
