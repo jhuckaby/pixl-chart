@@ -817,23 +817,8 @@ class Chart {
 		switch (this.dateRange) {
 			case 'minute':
 			case 'hour':
-				var left = this.formatDate( limits.xMin, 'tooltip' );
-				var right = this.formatDate( limits.xMax, 'tooltip' );
-				if (left == right) subtitle = left;
-				else subtitle = left + ' - ' + this.formatDate( limits.xMax, 'hour' );
-			break;
-			
 			case 'day':
-				var opts = Object.assign({}, this.dateStyles.tooltip);
-				var left = this.formatDate( limits.xMin, opts );
-				var right = this.formatDate( limits.xMax, opts );
-				if (left == right) subtitle = left;
-				else {
-					var day_left = this.formatDate( limits.xMin, 'month' );
-					var day_right = this.formatDate( limits.xMax, 'month' );
-					if (day_left == day_right) subtitle = left + ' - ' + this.formatDate( limits.xMax, 'hour' );
-					else subtitle = left + ' - ' + right;
-				}
+				subtitle = this.formatDateRange( limits.xMin, limits.xMax, 'tooltip' );
 			break;
 			
 			case 'month':
@@ -1600,6 +1585,15 @@ class Chart {
 		
 		var date = new Date( epoch * 1000 );
 		return date.toLocaleString( this.locale, opts );
+	}
+	
+	formatDateRange(start, end, key) {
+		// format date/time based on prefs
+		var opts = (typeof(key) == 'object') ? key : this.dateStyles[key];
+		opts.timeZone = this.timeZone;
+		
+		var formatter = new Intl.DateTimeFormat(this.locale, opts);
+		return formatter.formatRange( new Date(start * 1000), new Date(end * 1000) );
 	}
 	
 	isVisible() {
