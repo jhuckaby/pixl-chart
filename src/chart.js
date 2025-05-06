@@ -431,11 +431,7 @@ class Chart {
 			xMin: null, yMin: null, xMax: null, yMax: null
 		};
 		
-		if (this.zoom) {
-			// user has supplied custom data limits (i.e. zoom)
-			limits = this.zoom;
-		}
-		else if (this.flatten) {
+		if (this.flatten) {
 			// layers have been collapsed into one
 			var data = this.flatten.data, x = 0, y = 0;
 			for (var idx = 0, len = data.length; idx < len; idx++) {
@@ -461,6 +457,13 @@ class Chart {
 					if ((limits.yMax === null) || (y > limits.yMax)) limits.yMax = y;
 				}
 			} );
+		}
+		
+		if (this.zoom) {
+			// user has supplied custom data limits (i.e. zoom)
+			for (var key in this.zoom) {
+				limits[key] = this.zoom[key];
+			}
 		}
 		
 		this.dataLimits = limits;
@@ -1138,15 +1141,17 @@ class Chart {
 		if (fill) {
 			ctx.fillStyle = layer.fillStyle || ChartUtils.alphaColor( color, fill );
 			ctx.beginPath();
-			ctx.moveTo( bounds.x, bounds.y + bounds.height );
+			// ctx.moveTo( bounds.x, bounds.y + bounds.height );
 			
 			var pos = null;
 			for (var idx = 0, len = rows.length; idx < len; idx++) {
 				pos = this.getDotPos( rows[idx] );
+				if (idx == 0) ctx.moveTo( pos.x, bounds.y + bounds.height );
 				ctx.lineTo( pos.x, pos.y );
+				if (idx == len - 1) ctx.lineTo( pos.x, bounds.y + bounds.height );
 			}
 			
-			ctx.lineTo( bounds.x + bounds.width, bounds.y + bounds.height );
+			// ctx.lineTo( bounds.x + bounds.width, bounds.y + bounds.height );
 			ctx.fill();
 		} // fill
 		
