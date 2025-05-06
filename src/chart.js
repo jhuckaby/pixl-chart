@@ -227,6 +227,10 @@ class Chart {
 				}
 				layer.data[0].oy = layer.data[0].y;
 				layer.data[0].y = 0;
+				
+				// copy second delta sample onto first one, as we have to fill in the gap
+				// (delta layers don't have a sample 0, but we don't want to drop the sample as it won't line up with other non-delta graphs)
+				if (layer.data.length > 1) layer.data[0].y = layer.data[1].y;
 			}
 		}
 		
