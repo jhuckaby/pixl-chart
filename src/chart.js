@@ -459,6 +459,9 @@ class Chart {
 			} );
 		}
 		
+		// make copy before zoom, for things like auto-subtitle generation
+		this.origDataLimits = Object.assign({}, limits);
+		
 		if (this.zoom) {
 			// user has supplied custom data limits (i.e. zoom)
 			for (var key in this.zoom) {
@@ -813,7 +816,7 @@ class Chart {
 	
 	getSubtitle() {
 		// compose string for subtitle based on date range
-		var limits = this.dataLimits;
+		var limits = this.origDataLimits;
 		var subtitle = '';
 		if (this.subtitle) return this.subtitle;
 		
