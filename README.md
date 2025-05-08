@@ -39,6 +39,7 @@
 			- [seconds](#seconds)
 			- [milliseconds](#milliseconds)
 		+ [delta](#delta)
+		+ [deltaMinValue](#deltaminvalue)
 		+ [divideByDelta](#dividebydelta)
 		+ [density](#density)
 		+ [fill](#fill)
@@ -69,6 +70,7 @@
 		+ [showSubtitle](#showsubtitle)
 		+ [smoothing](#smoothing)
 		+ [smoothingMaxSamples](#smoothingmaxsamples)
+		+ [smoothingMaxTotalSamples](#smoothingmaxtotalsamples)
 		+ [stroke](#stroke)
 		+ [subtitle](#subtitle)
 		+ [timeZone](#timezone)
@@ -989,6 +991,14 @@ You can override `smoothing` on a layer-by-layer basis.  See [Layer Properties](
 If [smoothing](#smoothing) is set to `true`, but your dataset has more than this number of samples per layer (default `200`), smoothing is disabled.  This rule is evaluated on a layer-by-layer basis.
 
 The idea here is that at at certain point, smoothing can't really be seen because there are so many data samples in the chart.  Also, smoothing can cause performance issues with larger datasets, so it is a good idea to disable it in those cases.
+
+### smoothingMaxTotalSamples
+
+| Type | Default |
+|------|---------|
+| Number | `1000` |
+
+If [smoothing](#smoothing) is set to `true`, but your dataset has more than this number of total samples across all layers, smoothing is disabled.  This rule is evaluated globally, not per layer.  This is another performance tuning mechanism, designed to reduce lag on datasets with a large number of layers.
 
 ### stroke
 
