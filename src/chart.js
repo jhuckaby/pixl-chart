@@ -922,7 +922,7 @@ class Chart {
 	
 	renderData() {
 		// render all data layers
-		this.hoverPoints = [];
+		this.hoverPoints = {};
 		this.dataLabels = [];
 		this.isSmooth = true;
 		this.totalSamples = 0;
@@ -1175,7 +1175,9 @@ class Chart {
 			}
 			
 			// bookkeeping
-			if ((pos.x >= bounds.x) && (pos.x <= bounds.x + bounds.width)) this.hoverPoints.push( [pos.x, row.x] );
+			if ((pos.x >= bounds.x) && (pos.x <= bounds.x + bounds.width)) {
+				this.hoverPoints[ '' + Math.floor(pos.x) ] = row.x;
+			}
 			if (row.label) {
 				if (!row.label.color) row.label.color = color;
 				this.dataLabels.push(row);
@@ -1207,7 +1209,9 @@ class Chart {
 			ys.push( pos.y );
 			
 			// bookkeeping
-			if ((pos.x >= bounds.x) && (pos.x <= bounds.x + bounds.width)) this.hoverPoints.push( [pos.x, row.x] );
+			if ((pos.x >= bounds.x) && (pos.x <= bounds.x + bounds.width)) {
+				this.hoverPoints[ '' + Math.floor(pos.x) ] = row.x;
+			}
 			if (row.label) {
 				if (!row.label.color) row.label.color = color;
 				this.dataLabels.push(row);
@@ -1323,16 +1327,18 @@ class Chart {
 		var best_x = 0;
 		var epoch = false;
 		var dist = 0;
+		var temp = 0;
 		
-		this.hoverPoints.forEach( function(pair) {
-			var x = pair[0];
+		for (var x in this.hoverPoints) {
+			temp = this.hoverPoints[x];
+			x = parseInt(x);
 			dist = Math.abs(x - px);
 			if (dist < best_dist) {
 				best_dist = dist;
 				best_x = x;
-				epoch = pair[1];
+				epoch = temp;
 			}
-		} );
+		}
 		
 		if (!epoch) return this.cancelHover();
 		
