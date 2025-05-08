@@ -920,7 +920,7 @@ class Chart {
 	
 	renderData() {
 		// render all data layers
-		this.hoverPoints = {};
+		this.hoverPoints = [];
 		this.dataLabels = [];
 		this.isSmooth = true;
 		
@@ -1117,8 +1117,8 @@ class Chart {
 	getDotPos(dot) {
 		// calculate canvas x/y position for data sample
 		return {
-			x: Math.floor( this.bounds.x + ( ((dot.x - this.dataLimits.xMin) / this.dataLimits.width) * this.bounds.width ) ),
-			y: Math.floor( (this.bounds.y + this.bounds.height) - ( ((dot.y - this.dataLimits.yMin) / this.dataLimits.height) * this.bounds.height ) )
+			x: ( this.bounds.x + ( ((dot.x - this.dataLimits.xMin) / this.dataLimits.width) * this.bounds.width ) ),
+			y: ( (this.bounds.y + this.bounds.height) - ( ((dot.y - this.dataLimits.yMin) / this.dataLimits.height) * this.bounds.height ) )
 		};
 	}
 	
@@ -1171,7 +1171,7 @@ class Chart {
 			}
 			
 			// bookkeeping
-			if ((pos.x >= bounds.x) && (pos.x < bounds.x + bounds.width)) this.hoverPoints[ pos.x ] = row.x;
+			if ((pos.x >= bounds.x) && (pos.x <= bounds.x + bounds.width)) this.hoverPoints.push( [pos.x, row.x] );
 			if (row.label) {
 				if (!row.label.color) row.label.color = color;
 				this.dataLabels.push(row);
@@ -1203,7 +1203,7 @@ class Chart {
 			ys.push( pos.y );
 			
 			// bookkeeping
-			if ((pos.x >= bounds.x) && (pos.x < bounds.x + bounds.width)) this.hoverPoints[ pos.x ] = row.x;
+			if ((pos.x >= bounds.x) && (pos.x <= bounds.x + bounds.width)) this.hoverPoints.push( [pos.x, row.x] );
 			if (row.label) {
 				if (!row.label.color) row.label.color = color;
 				this.dataLabels.push(row);
@@ -1320,15 +1320,15 @@ class Chart {
 		var epoch = false;
 		var dist = 0;
 		
-		for (var x in this.hoverPoints) {
-			x = parseInt(x);
+		this.hoverPoints.forEach( function(pair) {
+			var x = pair[0];
 			dist = Math.abs(x - px);
 			if (dist < best_dist) {
 				best_dist = dist;
 				best_x = x;
-				epoch = this.hoverPoints[x];
+				epoch = pair[1];
 			}
-		}
+		} );
 		
 		if (!epoch) return this.cancelHover();
 		
