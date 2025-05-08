@@ -45,6 +45,7 @@ class Chart {
 		this.zeroFloor = true;
 		this.smoothing = true;
 		this.smoothingMaxSamples = 200;
+		this.smoothingMaxTotalSamples = 1000;
 		this.hover = true;
 		this.hoverSort = 0;
 		this.cursor = 'crosshair';
@@ -924,10 +925,12 @@ class Chart {
 		this.hoverPoints = [];
 		this.dataLabels = [];
 		this.isSmooth = true;
+		this.totalSamples = 0;
 		
 		if (this.flatten) {
 			// special render pipeline for flatten mode
 			var layer = this.flatten;
+			this.totalSamples += layer.data.length;
 			if ((!layer.smoothing && !this.smoothing) || (layer.data.length > this.smoothingMaxSamples)) {
 				this.isSmooth = false;
 			}
@@ -940,6 +943,7 @@ class Chart {
 		// scan all layers for smoothness
 		for (var idx = this.layers.length - 1; idx >= 0; idx--) {
 			var layer = this.layers[idx];
+			this.totalSamples += layer.data.length;
 			if ((!layer.smoothing && !this.smoothing) || (layer.data.length > this.smoothingMaxSamples)) {
 				this.isSmooth = false;
 			}
@@ -992,9 +996,8 @@ class Chart {
 		
 		if ('opacity' in layer) ctx.globalAlpha = layer.opacity;
 		
-		var func = 'renderLayer';
-		if ((layer.smoothing || this.smoothing) && (layer.data.length <= this.smoothingMaxSamples)) func = 'renderSmoothLayer';
-		this[func](layer);
+		if ((layer.smoothing || this.smoothing) && (layer.data.length <= this.smoothingMaxSamples) && (this.totalSamples <= this.smoothingMaxTotalSamples)) this.renderSmoothLayer(layer);
+		else this.renderLayer(layer);
 		
 		ctx.restore();
 		
