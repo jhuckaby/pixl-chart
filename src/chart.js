@@ -90,6 +90,7 @@ class Chart {
 			},
 			year: {
 				month: 'short',
+				day: 'numeric'
 				// year: 'numeric'
 			},
 			tooltip: {
