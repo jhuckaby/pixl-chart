@@ -1171,7 +1171,7 @@ class Chart {
 			}
 			
 			// bookkeeping
-			this.hoverPoints[ pos.x ] = row.x;
+			if ((pos.x >= bounds.x) && (pos.x < bounds.x + bounds.width)) this.hoverPoints[ pos.x ] = row.x;
 			if (row.label) {
 				if (!row.label.color) row.label.color = color;
 				this.dataLabels.push(row);
@@ -1203,7 +1203,7 @@ class Chart {
 			ys.push( pos.y );
 			
 			// bookkeeping
-			this.hoverPoints[ pos.x ] = row.x;
+			if ((pos.x >= bounds.x) && (pos.x < bounds.x + bounds.width)) this.hoverPoints[ pos.x ] = row.x;
 			if (row.label) {
 				if (!row.label.color) row.label.color = color;
 				this.dataLabels.push(row);
