@@ -120,7 +120,7 @@ pixl-chart does not come anywhere near the features offered by libraries such as
 ## Features
 
 - Zero dependencies.
-- Lightweight (28K minified, 9K gzipped).
+- Lightweight (30K minified, 10K gzipped).
 - Highly performant (tested up to 100,000 samples across 100 layers).
 - Full retina (HiDPI) support.
 - Supports custom timezones and locales.
@@ -701,6 +701,14 @@ Setting `dataType` to `milliseconds` means that your graph should display time-b
 | Boolean | `false` |
 
 This controls the interpretation of the vertical graph layer data.  When this is set to `true`, each `y` (vertical) value will be rendered as an offset from the previous value, rather than an absolute.  This is useful for datasets which contain counters (accumulating values over time), and you want to show the deltas between them.
+
+### deltaMinValue
+
+| Type | Default |
+|------|---------|
+| Mixed | `false` |
+
+When [delta](#delta) mode is enabled, setting `deltaMinValue` to a number (e.g. `0`) will clamp all computed delta values to the provided mininum.  This is useful for graphing the delta of absolute "counters" that should always count upwards.  For example, measuring the absolute value of network or disk read/write counters usually gives you an absolute counter of the bytes since last reboot.
 
 ### divideByDelta
 
