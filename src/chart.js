@@ -61,6 +61,7 @@ class Chart {
 		this.deltaMinValue = false;
 		this.divideByDelta = false;
 		this.flatten = null;
+		this.emptyMessage = "";
 		
 		this.dirty = false;
 		this.hidden = false;
@@ -930,7 +931,7 @@ class Chart {
 		if (this.flatten) {
 			// special render pipeline for flatten mode
 			var layer = this.flatten;
-			this.totalSamples += layer.data.length;
+			if (layer.data.length > 1) this.totalSamples += layer.data.length;
 			if ((!layer.smoothing && !this.smoothing) || (layer.data.length > this.smoothingMaxSamples)) {
 				this.isSmooth = false;
 			}
@@ -943,7 +944,7 @@ class Chart {
 		// scan all layers for smoothness
 		for (var idx = this.layers.length - 1; idx >= 0; idx--) {
 			var layer = this.layers[idx];
-			this.totalSamples += layer.data.length;
+			if (layer.data.length > 1) this.totalSamples += layer.data.length;
 			if ((!layer.smoothing && !this.smoothing) || (layer.data.length > this.smoothingMaxSamples)) {
 				this.isSmooth = false;
 			}
@@ -1011,6 +1012,11 @@ class Chart {
 		var ctx = this.ctx;
 		var bounds = this.bounds;
 		
+		if (!this.totalSamples && this.emptyMessage) {
+			this.renderEmptyMessage();
+			return;
+		}
+		
 		if (!this.dataLabels || !this.dataLabels.length) return;
 		
 		this.dataLabels.forEach( function(row) {
@@ -1052,6 +1058,22 @@ class Chart {
 			
 			ctx.restore();
 		} ); // foreach label
+	}
+	
+	renderEmptyMessage() {
+		// show custom message when there is no data to show
+		var ctx = this.ctx;
+		var bounds = this.bounds;
+		
+		ctx.save();
+		ctx.scale( this.density, this.density );
+		ctx.font = 'normal ' + this.fontSize + 'px ' + this.fontFamily;
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		ctx.fillStyle = this.fontColor;
+		ctx.translate( bounds.x + (bounds.width / 2), bounds.y + (bounds.height / 2) );
+		ctx.fillText( this.emptyMessage, 0, 0 );
+		ctx.restore();
 	}
 	
 	renderDataGaps() {
