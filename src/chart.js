@@ -362,12 +362,16 @@ class Chart {
 		var merge_type = flatten.type || 'avg';
 		var yes_round = !!this.dataType.match(/(integer|bytes|seconds|milliseconds)/);
 		var time_index = {};
+		var num_layers = 0;
 		
 		// make sure we have all required props
 		if (!('color' in flatten)) flatten.color = this.colors[0];
 		if (!('fill' in flatten)) flatten.fill = 0.5;
 		
 		this.layers.forEach( function(layer) {
+			if (layer.hidden) return;
+			num_layers++;
+			
 			layer.data.forEach( function(row) {
 				if (!time_index[row.x]) {
 					time_index[row.x] = { 
@@ -393,8 +397,13 @@ class Chart {
 			return parseInt(a) - parseInt(b);
 		});
 		
-		sorted_times.forEach( function(key) {
+		sorted_times.forEach( function(key, idx) {
 			var index = time_index[key];
+			
+			// skip first or final row if count is less than layers (reduce jank)
+			if ((index.count < num_layers) && (idx == sorted_times.length - 1)) return;
+			if ((index.count < num_layers) && (idx == 0)) return;
+			
 			var row = { x: index.x };
 			if (index.label) row.label = index.label;
 			
