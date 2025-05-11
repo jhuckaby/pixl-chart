@@ -1814,11 +1814,11 @@ const ChartManager = {
 	},
 	
 	check() {
-		// check all charts for redraw need, but only process one at a time
-		var chart = this.charts.filter( function(chart) { return chart.dirty && chart.isVisible(); } ).shift();
-		if (!chart) return;
+		// check all charts for redraw need, but only render visible+dirty ones
+		var charts = this.charts.filter( function(chart) { return chart.dirty && chart.isVisible(); } );
+		if (!charts.length) return;
 		
-		chart.render();
+		charts.forEach( function(chart) { chart.render(); } );
 		
 		// since we rendered one, there may be more dirty+visible, so recheck quickly while this is still true
 		requestAnimationFrame( this.check.bind(this) );
