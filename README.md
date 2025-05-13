@@ -42,6 +42,7 @@
 		+ [deltaMinValue](#deltaminvalue)
 		+ [divideByDelta](#dividebydelta)
 		+ [density](#density)
+		+ [emptyMessage](#emptymessage)
 		+ [fill](#fill)
 		+ [flatten](#flatten)
 		+ [floatPrecision](#floatprecision)
@@ -61,11 +62,13 @@
 		+ [lineDashes](#linedashes)
 		+ [lineJoin](#linejoin)
 		+ [lineWidth](#linewidth)
+		+ [live](#live)
 		+ [locale](#locale)
 		+ [minHorizScale](#minhorizscale)
 		+ [minVertScale](#minvertscale)
 		+ [padding](#padding)
 		+ [progressive](#progressive)
+		+ [reducedMotion](#reducedmotion)
 		+ [showDataGaps](#showdatagaps)
 		+ [showSubtitle](#showsubtitle)
 		+ [smoothing](#smoothing)
@@ -732,6 +735,14 @@ This does not affect the physical size of the canvas on the page -- it only affe
 
 If you set this to a fixed value and it *doesn't* match the user's screen density, the canvas will be scaled to fit.
 
+### emptyMessage
+
+| Type | Default |
+|------|---------|
+| String | `""` |
+
+When there is no data to show (empty datasets or no visible layers) you can use this property to display a custom text message, centered in the middle of the chart.  An example could be "Waiting for data...", or "No data to show.".
+
 ### fill
 
 | Type | Default |
@@ -912,6 +923,14 @@ This controls the width of the lines rendered in your chart, in pixels.  If you 
 
 You can override `lineWidth` on a layer-by-layer basis.  See [Layer Properties](#layer-properties) for details.
 
+### live
+
+| Type | Default |
+|------|---------|
+| Boolean | `false` |
+
+If your chart is going to be receiving streaming live data, setting this property to `true` allows the library to prepare for certain optimizations that may help the user experience.  Currently this mode affects [flattened](#flatten-layers) datasets, hiding the first and/or last sample if they are "partial".
+
 ### locale
 
 | Type | Default |
@@ -953,6 +972,14 @@ This object allows you to add extra padding on any side of the chart.  Note that
 By default, the entire chart is rendered all at once.  Meaning, everything is rendered in the same "frame".  This is usually fine for most charts.  However, in rare cases when you have a huge amount of complex layers with large datasets, you may want to render the chart "progressively".  That is, when this property is set to `true`, the chart will only render one layer at a time, and wait an animation frame between each one.  This allows you to render enormously complex charts without "hanging" the browser for too long.
 
 Please use this feature with caution.  It does not play nice with [Auto Resizing](#auto-resizing), for example.  It should be used for fixed size charts only.
+
+### reducedMotion
+
+| Type | Default |
+|------|---------|
+| Boolean | `false` |
+
+Set this property to `true` to reduce certain animations for accessibility purposes.  Currently this affects the motion of the tooltip window, focus line and data dots.
 
 ### showDataGaps
 
