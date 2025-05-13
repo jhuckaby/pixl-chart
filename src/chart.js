@@ -358,6 +358,7 @@ class Chart {
 		// optionally flatten all layers into a single layer
 		if (!this.flatten) return;
 		
+		var self = this;
 		var flatten = this.flatten;
 		var merge_type = flatten.type || 'avg';
 		var yes_round = !!this.dataType.match(/(integer|bytes|seconds|milliseconds)/);
@@ -400,9 +401,11 @@ class Chart {
 		sorted_times.forEach( function(key, idx) {
 			var index = time_index[key];
 			
-			// skip first or final row if count is less than layers (reduce jank)
-			if ((index.count < num_layers) && (idx == sorted_times.length - 1)) return;
-			if ((index.count < num_layers) && (idx == 0)) return;
+			// skip first or final row if count is less than layers (reduce jank in live mode)
+			if (self.live) {
+				if ((index.count < num_layers) && (idx == sorted_times.length - 1)) return;
+				if ((index.count < num_layers) && (idx == 0)) return;
+			}
 			
 			var row = { x: index.x };
 			if (index.label) row.label = index.label;
@@ -494,6 +497,7 @@ class Chart {
 		if (limits.xMin == limits.xMax) limits.xMin--;
 		
 		if (this.autoHeadroom) this.addHeadroom();
+		if (this.customHeadroom) this.customHeadroom();
 		
 		if (this.minHorizScale && ((limits.xMax - limits.xMin) < this.minHorizScale)) limits.xMax = limits.xMin + this.minHorizScale;
 		if (this.minVertScale && ((limits.yMax - limits.yMin) < this.minVertScale)) limits.yMax = limits.yMin + this.minVertScale;
@@ -941,7 +945,7 @@ class Chart {
 			// special render pipeline for flatten mode
 			var layer = this.flatten;
 			if (layer.data.length > 1) this.totalSamples += layer.data.length;
-			if ((!layer.smoothing && !this.smoothing) || (layer.data.length > this.smoothingMaxSamples)) {
+			if ((!layer.smoothing && !this.smoothing) || (layer.data.length > this.smoothingMaxSamples) || this.reducedMotion) {
 				this.isSmooth = false;
 			}
 			layer.dirty = true;
@@ -954,7 +958,7 @@ class Chart {
 		for (var idx = this.layers.length - 1; idx >= 0; idx--) {
 			var layer = this.layers[idx];
 			if (layer.data.length > 1) this.totalSamples += layer.data.length;
-			if ((!layer.smoothing && !this.smoothing) || (layer.data.length > this.smoothingMaxSamples)) {
+			if ((!layer.smoothing && !this.smoothing) || (layer.data.length > this.smoothingMaxSamples) || this.reducedMotion) {
 				this.isSmooth = false;
 			}
 			layer.dirty = true;
