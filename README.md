@@ -125,7 +125,7 @@ pixl-chart does not come anywhere near the features offered by libraries such as
 ## Features
 
 - Zero dependencies.
-- Lightweight (30K minified, 10K gzipped).
+- Lightweight (32K minified, 10K gzipped).
 - Highly performant (tested up to 100,000 samples across 100 layers).
 - Full retina (HiDPI) support.
 - Supports custom timezones and locales.

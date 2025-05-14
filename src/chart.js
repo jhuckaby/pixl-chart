@@ -1103,6 +1103,12 @@ class Chart {
 		ctx.save();
 		ctx.scale( self.density, self.density );
 		
+		if (this.clip) {
+			ctx.beginPath();
+			ctx.rect( bounds.x - 1, bounds.y - 1, bounds.width + 2, bounds.height + 2 );
+			ctx.clip();
+		}
+		
 		// first, determine the smallest time offset between data samples
 		// (i.e. the smallest allowed time 'gap' without alerting)
 		this.layers.forEach( function(layer) {
