@@ -38,6 +38,7 @@
 			- [bytes](#bytes)
 			- [seconds](#seconds)
 			- [milliseconds](#milliseconds)
+		+ [dateStyles](#datestyles)
 		+ [delta](#delta)
 		+ [deltaMinValue](#deltaminvalue)
 		+ [divideByDelta](#dividebydelta)
@@ -347,6 +348,8 @@ If your chart has too many layers, and/or the layer titles are too long, the leg
 By default, pixl-chart will display dates and times based on your browser's locale and time zone settings.  The locale governs things like how to format months, days, hours, and so on, whereas the time zone controls how the raw [Epoch](https://en.wikipedia.org/wiki/Unix_time) seconds from your dataset are converted to human-readable dates/times (i.e. offset from GMT, +/- daylight savings time, etc.).
 
 Both of these properties are configurable.  If you want to override the default auto-detect behavior, you can set the [locale](#locale) property to any value from [this list of language codes](https://en.wikipedia.org/wiki/Language_localisation#Language_tags_and_codes), e.g. `en-US`.  You can also override the default auto-detected time zone, and set the [timeZone](#timezone) property to any value from [this list of time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), e.g. `America/Los_Angeles`.
+
+For even more control, you can specify your own custom [dateStyles](#datestyles) object.
 
 ## Dark Mode
 
@@ -698,6 +701,50 @@ Setting `dataType` to `seconds` means that your graph should display time-based 
 #### milliseconds
 
 Setting `dataType` to `milliseconds` means that your graph should display time-based data values (i.e. elapsed time in milliseconds) for the Y axis.  The labels will be quantized based on their range, e.g. milliseconds (if under one second), then seconds, minutes, hours and/or days, with varying degrees of accuracy for display purposes.
+
+### dateStyles
+
+For fine-grained control over dates/times displayed in the axis labels and tooltips, you can specify your own custom `dateStyles` object.  The default configuration is shown below:
+
+```js
+chart.dateStyles = {
+	minute: {
+		hour: 'numeric',
+		hour12: false,
+		minute: '2-digit',
+		second: '2-digit'
+	},
+	hour: {
+		hour: 'numeric',
+		hour12: true,
+		minute: '2-digit'
+	},
+	day: {
+		hour: 'numeric',
+		hour12: true
+	},
+	month: {
+		month: 'short',
+		day: 'numeric'
+	},
+	year: {
+		month: 'short',
+		day: 'numeric'
+	},
+	tooltip: {
+		year: 'numeric',
+		month: 'short',
+		day: 'numeric',
+		hour: 'numeric',
+		hour12: true,
+		minute: '2-digit'
+	}
+};
+```
+
+This controls how to compose dates/times in each of the different "zoom levels" of the chart (based on the horizontal date range).  For example, if the total range of the chart is a minute or less, then the `minute` configuration is used.  If less than an hour, the `hour` one is used, and so on.  The `tooltip` object is used for dates/times inside of tooltips.
+
+The properties in each of these objects are passed directly to the [Intl.DateTimeFormat API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat).
 
 ### delta
 
