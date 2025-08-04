@@ -866,7 +866,7 @@ This is the number of pixels set aside for padding below the horizontal axis lab
 |------|---------|
 | Number | `6` |
 
-This is the number of horizontal "ticks" (grid lines and labels) for the X axis and timestamps.  Beware of increasing this too far, as the labels may run into each other.
+This is the number of horizontal "ticks" (grid lines and labels) for the X axis and timestamps.  Beware of increasing this too far, as the labels may run into each other.  Also note that the library will auto-reduce this number for extremely small charts (i.e. for mobile screens).  The algorithm is: `Math.min( horizTicks, Math.ceil(width / 100) )`.  This effectively prevents most labels from colliding.
 
 ### hover
 

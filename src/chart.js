@@ -753,10 +753,14 @@ class Chart {
 		ctx.strokeStyle = this.borderColor;
 		ctx.lineWidth = 1;
 		
+		// auto-adjust ticks if they may collide with each other (i.e. for smaller screens)
+		var width = Math.ceil( this.canvas.width / this.density );
+		var horizTicks = Math.min( this.horizTicks, Math.ceil(width / 100) );
+		
 		var labels = [];
 		var date_fmt = this.dateRange;
 		var idx_start = 0;
-		var idx_end = this.horizTicks;
+		var idx_end = horizTicks;
 		
 		if (this.vertLabelSide == 'right') {
 			idx_start++;
@@ -764,9 +768,9 @@ class Chart {
 		}
 		
 		for (var idx = idx_start; idx < idx_end; idx++) {
-			var epoch = limits.xMin + (((limits.xMax - limits.xMin) / this.horizTicks) * idx);
+			var epoch = limits.xMin + (((limits.xMax - limits.xMin) / horizTicks) * idx);
 			var text = this.formatDate(epoch, date_fmt);
-			var x = bounds.x + ((idx / this.horizTicks) * bounds.width);
+			var x = bounds.x + ((idx / horizTicks) * bounds.width);
 			labels.push({ text, x, line: true });
 		}
 		
