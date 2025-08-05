@@ -511,7 +511,7 @@ class Chart {
 		if (x_range > 86400 * 32) date_fmt = 'year';
 		else if (x_range > 86400 * 2) date_fmt = 'month';
 		else if (x_range > 43200) date_fmt = 'day';
-		else if (x_range > 120) date_fmt = 'hour';
+		else if (x_range > 600) date_fmt = 'hour';
 		else date_fmt = 'minute';
 		
 		this.dateRange = date_fmt;
