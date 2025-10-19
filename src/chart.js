@@ -821,6 +821,7 @@ class Chart {
 			ctx.fillText( title, bounds.x + (bounds.width / 2), bounds.y + this.titlePadding );
 			
 			ctx.font = 'normal ' + this.fontSize + 'px ' + this.fontFamily;
+			ctx.fillStyle = this.subtitleColor || this.fontColor;
 			ctx.fillText( this.getSubtitle(), bounds.x + (bounds.width / 2), bounds.y + (this.titleSize / 1) + this.titlePadding + 1 );
 		}
 		else {
