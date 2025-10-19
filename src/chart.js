@@ -1523,15 +1523,6 @@ class Chart {
 				point.className = 'pxc_tt_point' + (self.isSmooth ? ' pxc_smooth' : '');
 				point.style.backgroundColor = layer.color;
 				point.style.cursor = self.cursor;
-				point.style.width = '' + Math.floor( 8 + self.lineWidth ) + 'px';
-				point.style.height = '' + Math.floor( 8 + self.lineWidth ) + 'px';
-				point.style.borderWidth = '' + Math.floor(self.lineWidth) + 'px';
-				
-				var half_size = Math.floor( ((8 + self.lineWidth) + (self.lineWidth * 2)) / 2 );
-				point.style.borderRadius = '' + half_size + 'px';
-				point.style.marginLeft = '' + Math.floor( 0 - half_size ) + 'px';
-				point.style.marginTop = '' + Math.floor( 0 - half_size ) + 'px';
-				
 				document.body.appendChild( point );
 			}
 			point.style.left = '' + Math.floor(rect.left + window.scrollX + pos.x) + 'px';
