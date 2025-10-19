@@ -1513,6 +1513,8 @@ class Chart {
 		
 		// render hover points
 		family.forEach( function(fam) {
+			if (fam === 'SNIP') return;
+			
 			var layer = fam.layer;
 			var pos = self.getDotPos({ x: epoch, y: fam.value });
 			var point = self.tooltip.points[ layer.idx ];
