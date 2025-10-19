@@ -16,6 +16,7 @@ class Chart {
 		this.fontColor = 'rgb(128, 128, 128)';
 		this.titleSize = 16;
 		this.titleStyle = 'bold';
+		this.titleColor = '';
 		this.titlePadding = 15;
 		this.title = '';
 		this.subtitle = '';
@@ -813,7 +814,7 @@ class Chart {
 		ctx.scale( this.density, this.density );
 		ctx.font = this.titleStyle + ' ' + this.titleSize + 'px ' + this.fontFamily;
 		ctx.textAlign = 'center';
-		ctx.fillStyle = this.fontColor;
+		ctx.fillStyle = this.titleColor || this.fontColor;
 		ctx.textBaseline = 'middle';
 		
 		if (this.showSubtitle) {

@@ -83,6 +83,7 @@
 		+ [titlePadding](#titlepadding)
 		+ [titleSize](#titlesize)
 		+ [titleStyle](#titlestyle)
+		+ [titleColor](#titlecolor)
 		+ [vertLabelPadding](#vertlabelpadding)
 		+ [vertLabelSide](#vertlabelside)
 		+ [vertTicks](#vertticks)
@@ -1144,6 +1145,14 @@ If a title is specified, it will be rendered at this pixel size.  By default thi
 | String | `bold` |
 
 If a title is specified, it will be displayed using this font style.  By default this is `bold`.
+
+### titleColor
+
+| Type | Default |
+|------|---------|
+| String | `""` |
+
+Optionally customize the font color of the graph title.  If omitted, this defaults to the value of [fontColor](#fontcolor).
 
 ### vertLabelPadding
 
