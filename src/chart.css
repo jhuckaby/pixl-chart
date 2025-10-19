@@ -62,6 +62,13 @@
 	border-style: solid;
 }
 
+.pxc_tt_snip {
+	margin-top: 3px;
+	margin-bottom: 3px;
+	font-size: 1.25em; 
+	text-align: center;
+}
+
 /* dark theme */
 
 body.dark .pxc_line {

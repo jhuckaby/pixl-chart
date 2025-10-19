@@ -55,6 +55,7 @@
 		+ [horizTicks](#horizticks)
 		+ [hover](#hover)
 		+ [hoverSort](#hoversort)
+		+ [hoverMax](#hovermax)
 		+ [layers](#layers)
 		+ [legend](#legend)
 		+ [legendMaxLines](#legendmaxlines)
@@ -889,6 +890,14 @@ Inside the hover tooltip box, each layer is displayed along with its data value 
 | `0` | Do not sort (the layers will be in their natural order). |
 | `1` | Sort the layers by the data values in *ascending* order. |
 | `-1` | Sort the layers by the data values in *descending* order. |
+
+### hoverMax
+
+| Type | Default |
+|------|---------|
+| Number | `20` |
+
+Specify the maximum number of layers to display in the hover tooltip box.  If your chart has more layers than the maximum, the list is chopped *from the center*.  This is so the user can see the topmost and bottommost layers.  This is most effective when combined with [hoverSort](#hoversort), so the user can see the layers with the highest and lowest values.
 
 ### layers
 

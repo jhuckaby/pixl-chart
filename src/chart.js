@@ -48,6 +48,7 @@ class Chart {
 		this.smoothingMaxTotalSamples = 1000;
 		this.hover = true;
 		this.hoverSort = 0;
+		this.hoverMax = 20;
 		this.cursor = 'crosshair';
 		this.showDataGaps = false;
 		this.dataGapImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAQAAAAnOwc2AAAAAXNSR0IArs4c6QAAADRJREFUCNedyjERAEEQAsERsjpwhQUK6Z9cRvZpVxNXPQDoVXHMUsxSxdJrvwmWeixVLMUfKik183saHHcAAAAASUVORK5CYII=";
@@ -1436,8 +1437,21 @@ class Chart {
 			return (self.hoverSort == -1) ? (b.value - a.value) : (a.value - b.value);
 		} );
 		
+		// chop list in middle if too long
+		if (this.hoverMax && (family.length > this.hoverMax)) {
+			var half_max = Math.floor( this.hoverMax / 2 );
+			var top_items = family.slice( 0, half_max );
+			var bottom_items = family.slice( 0 - half_max );
+			family = [ ...top_items, 'SNIP', ...bottom_items ];
+		}
+		
 		// add all lines (layers)
 		family.forEach( function(fam) {
+			if (fam === 'SNIP') {
+				html += `<tr><td colspan="3"><div class="pxc_tt_snip">&#x3030;&#x3030;&#x3030;</div></td></tr>`;
+				return;
+			}
+			
 			var layer = fam.layer;
 			var value = fam.value;
 			var row = fam.row;
