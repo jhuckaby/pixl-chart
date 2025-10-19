@@ -1045,6 +1045,13 @@ class Chart {
 			
 			ctx.save();
 			ctx.scale( self.density, self.density );
+			
+			if (self.clip) {
+				ctx.beginPath();
+				ctx.rect( bounds.x - 1, bounds.y - 1, bounds.width + 2, bounds.height + 2 );
+				ctx.clip();
+			}
+			
 			ctx.font = 'normal ' + self.fontSize + 'px ' + self.fontFamily;
 			ctx.textAlign = 'center';
 			ctx.textBaseline = 'middle';
