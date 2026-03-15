@@ -1787,10 +1787,10 @@ class Chart {
 		if (this.manager) {
 			// remove from management
 			this.manager.remove(this);
+			
+			// make sure no old overlays are left
+			document.querySelectorAll('.pxc_tt_overlay').forEach( function(item) { item.remove(); } );
 		}
-		
-		// make sure no old overlays are left
-		document.querySelectorAll('.pxc_tt_overlay').forEach( function(item) { item.remove(); } );
 	}
 	
 	// Simple EventEmitter mix-in:
