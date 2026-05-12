@@ -1858,9 +1858,6 @@ const ChartManager = {
 		if (!charts.length) return;
 		
 		charts.forEach( function(chart) { chart.render(); } );
-		
-		// since we rendered one, there may be more dirty+visible, so recheck quickly while this is still true
-		requestAnimationFrame( this.check.bind(this) );
 	}
 	
 }; // ChartManager
