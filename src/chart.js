@@ -1854,7 +1854,7 @@ const ChartManager = {
 	
 	check() {
 		// check all charts for redraw need, but only render visible+dirty ones
-		var charts = this.charts.filter( function(chart) { return chart.dirty && chart.isVisible(); } );
+		var charts = this.charts.filter( function(chart) { return chart.ready && chart.dirty && chart.isVisible(); } );
 		if (!charts.length) return;
 		
 		charts.forEach( function(chart) { chart.render(); } );
